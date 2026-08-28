@@ -134,6 +134,9 @@
             transition: 0.3s;
             text-decoration: none;
             font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
         .top-bar .logout-btn:hover { background: rgba(239,68,68,0.12); }
 
@@ -176,18 +179,20 @@
         }
         .section-title { font-size: 1.1rem; font-weight: 700; }
 
+        /* ===== BUTTONS - ALL CENTERED ===== */
         .btn {
-            padding: 8px 22px;
+            padding: 10px 30px;
             border: none;
             border-radius: 50px;
             font-weight: 600;
             cursor: pointer;
             transition: 0.3s;
             font-family: 'Inter', sans-serif;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
         }
         .btn-primary { background: var(--primary); color: #0a0a0a; }
@@ -195,7 +200,16 @@
         .btn-success { background: #22c55e; color: #ffffff; }
         .btn-danger { background: #ef4444; color: #ffffff; }
         .btn-warning { background: #f59e0b; color: #0a0a0a; }
-        .btn-sm { padding: 4px 12px; font-size: 0.75rem; }
+        .btn-sm { padding: 5px 14px; font-size: 0.75rem; }
+
+        .btn-center-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-top: 10px;
+            grid-column: 1 / -1;
+        }
 
         .form-grid {
             display: grid;
@@ -220,7 +234,6 @@
             box-shadow: 0 0 0 4px var(--primary-glow);
         }
         .full-width { grid-column: 1 / -1; }
-        .btn-center { display: flex; justify-content: center; margin-top: 10px; }
 
         .table-container { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 600px; }
@@ -432,19 +445,6 @@
             margin-top: 5px;
         }
         .add-variant-btn:hover { border-color: var(--primary); background: var(--primary-hover); }
-        .variant-fields-box {
-            display: none;
-            margin-top: 15px;
-            padding: 15px;
-            border: 1px dashed var(--primary-border);
-            border-radius: 12px;
-        }
-        .variant-fields-box.show { display: block; }
-        .variant-fields-box h4 {
-            color: var(--primary);
-            margin-bottom: 12px;
-            font-size: 0.95rem;
-        }
         .variant-tag {
             display: inline-block;
             background: rgba(36,199,242,0.06);
@@ -496,6 +496,7 @@
                 padding-top: 10px;
             }
             .top-bar h1 { font-size: 1.3rem; }
+            .top-bar .logout-btn { width: 100%; justify-content: center; }
             .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
             .stat-card .number { font-size: 1.5rem; }
             .form-grid { grid-template-columns: 1fr; }
@@ -630,12 +631,14 @@
                                 <td><span class="badge {% if user.is_admin %}badge-admin{% else %}badge-user{% endif %}">{% if user.is_admin %}Admin{% else %}User{% endif %}</span></td>
                                 <td>{{ user.orders|length }}</td>
                                 <td>
-                                    <form method="POST" action="/admin/update-user-balance" style="display: flex; gap: 5px; flex-wrap: wrap;">
-                                        <input type="hidden" name="user_id" value="{{ user.id }}">
-                                        <input type="number" name="amount" placeholder="Amount" step="0.01" style="width: 80px; padding: 4px 8px; border: 1px solid var(--primary-border); border-radius: 6px; background: rgba(255,255,255,0.05); color: #fff;">
-                                        <button type="submit" name="action" value="add" class="btn btn-success btn-sm">+</button>
-                                        <button type="submit" name="action" value="remove" class="btn btn-danger btn-sm">-</button>
-                                    </form>
+                                    <div class="btn-center-wrapper">
+                                        <form method="POST" action="/admin/update-user-balance" style="display: flex; gap: 5px; flex-wrap: wrap; justify-content: center;">
+                                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                                            <input type="number" name="amount" placeholder="Amount" step="0.01" style="width: 80px; padding: 4px 8px; border: 1px solid var(--primary-border); border-radius: 6px; background: rgba(255,255,255,0.05); color: #fff;">
+                                            <button type="submit" name="action" value="add" class="btn btn-success btn-sm">+</button>
+                                            <button type="submit" name="action" value="remove" class="btn btn-danger btn-sm">-</button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -653,7 +656,9 @@
                     <div class="form-grid">
                         <div class="form-group"><label>Category Name</label><input type="text" name="name" placeholder="Enter category name" required></div>
                         <div class="form-group"><label>Icon (FontAwesome)</label><input type="text" name="icon" placeholder="fa-tag, fa-gamepad, etc."></div>
-                        <div class="form-group" style="justify-content: flex-end;"><button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Add Category</button></div>
+                        <div class="btn-center-wrapper">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Add Category</button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -700,8 +705,7 @@
                         <div class="form-group" id="fileLinkGroup"><label>File Link</label><input type="text" name="file_link" placeholder="https://example.com/file.zip"></div>
                         <div class="form-group" id="codeGroup" style="display:none;"><label>Codes (one per line)</label><textarea name="codes" rows="4" placeholder="CODE1&#10;CODE2&#10;CODE3"></textarea></div>
 
-                        <!-- 👇 Centered Submit Button -->
-                        <div class="form-group full-width btn-center">
+                        <div class="btn-center-wrapper">
                             <button type="submit" class="btn btn-primary" style="padding: 12px 50px; font-size: 1rem; min-width: 200px;">
                                 <i class="fas fa-plus"></i> Add Product
                             </button>
@@ -842,7 +846,9 @@
                         <div class="form-group"><label>Coupon Code</label><input type="text" name="code" placeholder="SUMMER20" required style="text-transform: uppercase;"></div>
                         <div class="form-group"><label>Discount (%)</label><input type="number" name="discount_percent" placeholder="10, 20, 50" min="1" max="100" required></div>
                         <div class="form-group"><label>Max Discount (optional)</label><input type="number" name="max_discount" placeholder="500" step="0.01"><span style="color:#64748b;font-size:0.7rem;">Leave empty for no limit</span></div>
-                        <div class="form-group" style="justify-content: flex-end;"><button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Create Coupon</button></div>
+                        <div class="btn-center-wrapper">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Create Coupon</button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -888,7 +894,9 @@
                         <div class="form-group"><label>Title</label><input type="text" name="title" placeholder="Banner Title"></div>
                         <div class="form-group"><label>Link (optional)</label><input type="text" name="link" placeholder="https://example.com"></div>
                         <div class="form-group"><label>Order</label><input type="number" name="order" value="0"></div>
-                        <div class="form-group" style="justify-content: flex-end;"><button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Add Banner</button></div>
+                        <div class="btn-center-wrapper">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Add Banner</button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -927,7 +935,9 @@
                         <div class="form-group"><label>Send To</label><select name="user_id" required><option value="all">All Users</option>{% for user in users %}<option value="{{ user.id }}">{{ user.username }}</option>{% endfor %}</select></div>
                         <div class="form-group"><label>Title</label><input type="text" name="title" placeholder="Notification title" required></div>
                         <div class="form-group"><label>Message</label><textarea name="message" rows="3" placeholder="Notification message" required></textarea></div>
-                        <div class="form-group" style="justify-content: flex-end;"><button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Send Notification</button></div>
+                        <div class="btn-center-wrapper">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Send Notification</button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -957,7 +967,7 @@
         <div id="tab-popup" class="tab-content">
             <div class="section-card">
                 <div class="section-header"><div class="section-title"><i class="fas fa-window-maximize" style="color:var(--primary);"></i> Popup Settings</div></div>
-                <div style="display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; align-items: center;">
+                <div style="display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; align-items: center; justify-content: center;">
                     <form method="POST" action="/admin/popup-on" style="display:inline;"><button type="submit" class="btn btn-success" style="padding: 10px 30px; {% if popup and popup.is_enabled %}opacity:0.5;pointer-events:none;{% endif %}"><i class="fas fa-power-off"></i> Turn ON</button></form>
                     <form method="POST" action="/admin/popup-off" style="display:inline;"><button type="submit" class="btn btn-danger" style="padding: 10px 30px; {% if popup and not popup.is_enabled %}opacity:0.5;pointer-events:none;{% endif %}"><i class="fas fa-power-off"></i> Turn OFF</button></form>
                     <span style="display: flex; align-items: center; color: #94a3b8; font-size: 0.9rem;">Current Status: {% if popup and popup.is_enabled %}<span style="color: #22c55e; font-weight: 700; margin-left: 5px;">● ACTIVE</span>{% else %}<span style="color: #94a3b8; font-weight: 700; margin-left: 5px;">● INACTIVE</span>{% endif %}</span>
@@ -968,7 +978,9 @@
                         <div class="form-group"><label>Message</label><textarea name="message" rows="3" placeholder="Enter popup message">{{ popup.message if popup else '' }}</textarea></div>
                         <div class="form-group"><label>Button Text</label><input type="text" name="button_text" value="{{ popup.button_text if popup else 'Join Now' }}"></div>
                         <div class="form-group"><label>Button Link</label><input type="text" name="button_link" value="{{ popup.button_link if popup else '' }}" placeholder="https://t.me/yourchannel"></div>
-                        <div class="form-group" style="justify-content: flex-end;"><button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Settings</button></div>
+                        <div class="btn-center-wrapper">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Settings</button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -978,7 +990,7 @@
         <div id="tab-maintenance" class="tab-content">
             <div class="section-card">
                 <div class="section-header"><div class="section-title"><i class="fas fa-tools" style="color:var(--primary);"></i> Maintenance Settings</div></div>
-                <div style="display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; align-items: center;">
+                <div style="display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; align-items: center; justify-content: center;">
                     <form method="POST" action="/admin/maintenance-on" style="display:inline;"><button type="submit" class="btn btn-success" style="padding: 10px 30px; {% if maintenance and maintenance.is_enabled %}opacity:0.5;pointer-events:none;{% endif %}"><i class="fas fa-power-off"></i> Turn ON</button></form>
                     <form method="POST" action="/admin/maintenance-off" style="display:inline;"><button type="submit" class="btn btn-danger" style="padding: 10px 30px; {% if maintenance and not maintenance.is_enabled %}opacity:0.5;pointer-events:none;{% endif %}"><i class="fas fa-power-off"></i> Turn OFF</button></form>
                     <span style="display: flex; align-items: center; color: #94a3b8; font-size: 0.9rem;">Current Status: {% if maintenance and maintenance.is_enabled %}<span style="color: #22c55e; font-weight: 700; margin-left: 5px;">● ACTIVE</span>{% else %}<span style="color: #94a3b8; font-weight: 700; margin-left: 5px;">● INACTIVE</span>{% endif %}</span>
@@ -987,7 +999,9 @@
                     <div class="form-grid">
                         <div class="form-group"><label>Photo URL</label><input type="text" name="photo" value="{{ maintenance.photo if maintenance else '' }}" placeholder="https://example.com/maintenance.jpg"></div>
                         <div class="form-group"><label>Message</label><textarea name="message" rows="3" placeholder="Enter maintenance message">{{ maintenance.message if maintenance else 'Site is under maintenance. Please check back later.' }}</textarea></div>
-                        <div class="form-group" style="justify-content: flex-end;"><button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Settings</button></div>
+                        <div class="btn-center-wrapper">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Settings</button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -1042,8 +1056,10 @@
                         </div>
                     </div>
 
-                    <div class="form-group full-width" style="justify-content: center; margin-top:10px; grid-column: 1 / -1;">
-                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update Product</button>
+                    <div class="btn-center-wrapper" style="margin-top: 15px;">
+                        <button type="submit" class="btn btn-primary" style="padding: 12px 50px; font-size: 1rem; min-width: 200px;">
+                            <i class="fas fa-save"></i> Update Product
+                        </button>
                     </div>
                 </div>
             </form>
@@ -1081,7 +1097,6 @@
                 document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
                 document.getElementById(`tab-${tabName}`).classList.add('active');
                 
-                // Close sidebar on mobile
                 if (window.innerWidth <= 768) {
                     toggleSidebar();
                 }
@@ -1144,7 +1159,6 @@
                     const codeGroup = document.getElementById('editCodeGroup');
                     const variantsList = document.getElementById('editVariantsList');
                     
-                    // Show variants
                     variantsList.style.display = 'block';
                     const display = document.getElementById('editVariantsDisplay');
                     if (data.variants && data.variants.length > 0) {
@@ -1200,7 +1214,6 @@
             if (e.target === this) closeEditPopup();
         });
 
-        // ===== AUTO CLOSE SIDEBAR ON RESIZE =====
         window.addEventListener('resize', function() {
             if (window.innerWidth > 768) {
                 const sidebar = document.getElementById('sidebar');
