@@ -23,9 +23,9 @@ login_manager.login_view = 'login_page'
 # ============================================
 # GOOGLE OAUTH CONFIG
 # ============================================
-GOOGLE_CLIENT_ID = '496748598869-ssp5n2hul7te1153qvg0htk0kgr0v2c0.apps.googleusercontent.com'
-GOOGLE_CLIENT_SECRET = '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'
-GOOGLE_REDIRECT_URI = 'http://localhost:5000/google-callback'
+GOOGLE_CLIENT_ID = '1000333354528-f49uv8p3f6avkl9ou1iptmdh9ntoa7or.apps.googleusercontent.com'
+GOOGLE_CLIENT_SECRET = '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'
+GOOGLE_REDIRECT_URI = 'https://jubayerxtools-production.up.railway.app/google-callback'
 
 # ============================================
 # BOHUDUR PAYMENT CONFIG
