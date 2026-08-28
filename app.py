@@ -1393,7 +1393,7 @@ def delete_product(product_id):
     flash('Product deleted successfully!', 'success')
     return redirect(url_for('admin_dashboard'))
 
-@app.route('/admin/update-product/<int:product_id>', methods(['POST'])
+@app.route('/admin/update-product/<int:product_id>', methods=['POST'])
 @login_required
 def update_product(product_id):
     if not current_user.is_admin:
