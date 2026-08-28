@@ -31,37 +31,55 @@ except Exception as e:
     db = None
 
 # ============================================
-# COLLECTIONS
+# COLLECTIONS (FIXED for Vercel)
 # ============================================
-users_collection = db['users'] if db else None
-categories_collection = db['categories'] if db else None
-products_collection = db['products'] if db else None
-variants_collection = db['variants'] if db else None
-orders_collection = db['orders'] if db else None
-transactions_collection = db['transactions'] if db else None
-coupons_collection = db['coupons'] if db else None
-notifications_collection = db['notifications'] if db else None
-banners_collection = db['banners'] if db else None
-popup_collection = db['popup'] if db else None
-maintenance_collection = db['maintenance'] if db else None
-airdrop_codes_collection = db['airdrop_codes'] if db else None
+if db is not None:
+    users_collection = db['users']
+    categories_collection = db['categories']
+    products_collection = db['products']
+    variants_collection = db['variants']
+    orders_collection = db['orders']
+    transactions_collection = db['transactions']
+    coupons_collection = db['coupons']
+    notifications_collection = db['notifications']
+    banners_collection = db['banners']
+    popup_collection = db['popup']
+    maintenance_collection = db['maintenance']
+    airdrop_codes_collection = db['airdrop_codes']
+else:
+    users_collection = None
+    categories_collection = None
+    products_collection = None
+    variants_collection = None
+    orders_collection = None
+    transactions_collection = None
+    coupons_collection = None
+    notifications_collection = None
+    banners_collection = None
+    popup_collection = None
+    maintenance_collection = None
+    airdrop_codes_collection = None
 
 # ============================================
 # CREATE INDEXES
 # ============================================
-if db:
-    users_collection.create_index("username", unique=True)
-    users_collection.create_index("email", unique=True)
-    users_collection.create_index("google_id", unique=True, sparse=True)
-    categories_collection.create_index("name", unique=True)
-    coupons_collection.create_index("code", unique=True)
-    airdrop_codes_collection.create_index("code", unique=True)
-    orders_collection.create_index("order_id", unique=True)
+if db is not None:
+    try:
+        users_collection.create_index("username", unique=True)
+        users_collection.create_index("email", unique=True)
+        users_collection.create_index("google_id", unique=True, sparse=True)
+        categories_collection.create_index("name", unique=True)
+        coupons_collection.create_index("code", unique=True)
+        airdrop_codes_collection.create_index("code", unique=True)
+        orders_collection.create_index("order_id", unique=True)
+        print("✅ Indexes created successfully!")
+    except Exception as e:
+        print(f"⚠️ Index creation warning: {e}")
 
 # ============================================
 # GOOGLE OAUTH CONFIG
 # ============================================
-GOOGLE_CLIENT_ID = 'https://1000333354528-f49uv8p3f6avkl9ou1iptmdh9ntoa7or.apps.googleusercontent.com'
+GOOGLE_CLIENT_ID = '1000333354528-f49uv8p3f6avkl9ou1iptmdh9ntoa7or.apps.googleusercontent.com'
 GOOGLE_CLIENT_SECRET = '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'
 GOOGLE_REDIRECT_URI = 'https://jubayer-x-tools-pi.vercel.app/google-callback'
 
@@ -98,11 +116,14 @@ class User(UserMixin):
 
 @login_manager.user_loader
 def load_user(user_id):
-    if not db:
+    if users_collection is None:
         return None
-    user_data = users_collection.find_one({'_id': ObjectId(user_id)})
-    if user_data:
-        return User(user_data)
+    try:
+        user_data = users_collection.find_one({'_id': ObjectId(user_id)})
+        if user_data:
+            return User(user_data)
+    except Exception as e:
+        print(f"⚠️ Load user error: {e}")
     return None
 
 # ============================================
@@ -113,13 +134,15 @@ def hash_password(password):
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
 def check_password(password, hashed):
+    if hashed is None:
+        return False
     return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
 
 def generate_order_id(user_id):
     return f"JX{int(time.time())}{''.join(random.choices(string.ascii_uppercase + string.digits, k=6))}"
 
 def get_user_by_id(user_id):
-    if not db:
+    if users_collection is None:
         return None
     if isinstance(user_id, str) and user_id.isdigit():
         return users_collection.find_one({'user_id': int(user_id)})
@@ -129,7 +152,7 @@ def get_user_by_id(user_id):
         return users_collection.find_one({'user_id': user_id})
 
 def add_codes_to_product(product_id, codes_text):
-    if not codes_text or not db:
+    if not codes_text or airdrop_codes_collection is None:
         return 0
     codes = [c.strip() for c in codes_text.split('\n') if c.strip()]
     added = 0
@@ -149,7 +172,7 @@ def add_codes_to_product(product_id, codes_text):
     return added
 
 def validate_coupon(coupon_code, user_id):
-    if not db:
+    if coupons_collection is None:
         return None, "Database not connected"
     coupon = coupons_collection.find_one({'code': coupon_code.upper(), 'is_active': True})
     if not coupon:
@@ -165,7 +188,7 @@ def calculate_discount(price, coupon):
     return discount_amount
 
 def is_maintenance_on():
-    if not db:
+    if maintenance_collection is None:
         return False
     setting = maintenance_collection.find_one({'key': 'maintenance'})
     return setting.get('value', False) if setting else False
@@ -228,7 +251,7 @@ def create_bohudur_payment(amount, user_id, username=None):
 # ============================================
 
 def init_db():
-    if not db:
+    if users_collection is None:
         return
     
     # Admin User
@@ -348,7 +371,7 @@ def google_login():
 
 @app.route('/google-callback')
 def google_callback():
-    if not db:
+    if users_collection is None:
         flash('Database not connected!', 'error')
         return redirect(url_for('login_page'))
     
@@ -423,7 +446,7 @@ def google_callback():
 
 @app.route('/')
 def index():
-    if not db:
+    if db is None:
         return "Database not connected!", 500
     maintenance = maintenance_collection.find_one({'key': 'maintenance'})
     if maintenance and maintenance.get('value', False):
@@ -433,7 +456,7 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
-    if not db:
+    if users_collection is None:
         flash('Database not connected!', 'error')
         return render_template('login.html', active_tab='login')
     
@@ -507,7 +530,7 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    if not db:
+    if users_collection is None:
         flash('Database not connected!', 'error')
         return redirect(url_for('login_page'))
     
@@ -532,10 +555,14 @@ def dashboard():
                          banners=banners,
                          unread_count=unread_count)
 
+# ============================================
+# REMAINING ROUTES (সব আগের মতো)
+# ============================================
+
 @app.route('/my-profile')
 @login_required
 def my_profile():
-    if not db:
+    if users_collection is None:
         flash('Database not connected!', 'error')
         return redirect(url_for('login_page'))
     
@@ -558,7 +585,7 @@ def my_profile():
 @app.route('/my-orders')
 @login_required
 def my_orders():
-    if not db:
+    if users_collection is None:
         flash('Database not connected!', 'error')
         return redirect(url_for('login_page'))
     
@@ -591,7 +618,7 @@ def my_orders():
 @app.route('/my-transactions')
 @login_required
 def my_transactions():
-    if not db:
+    if users_collection is None:
         flash('Database not connected!', 'error')
         return redirect(url_for('login_page'))
     
@@ -609,7 +636,7 @@ def my_transactions():
 @app.route('/add-balance')
 @login_required
 def add_balance():
-    if not db:
+    if users_collection is None:
         flash('Database not connected!', 'error')
         return redirect(url_for('login_page'))
     
@@ -624,7 +651,7 @@ pending_payments = {}
 @app.route('/create-payment', methods=['POST'])
 @login_required
 def create_payment():
-    if not db:
+    if users_collection is None:
         return jsonify({'error': 'Database not connected'}), 500
     
     try:
@@ -669,7 +696,7 @@ def create_payment():
 
 @app.route('/payment/webhook', methods=['POST'])
 def payment_webhook():
-    if not db:
+    if users_collection is None:
         return jsonify({'status': 'error', 'message': 'Database not connected'}), 500
     
     try:
@@ -745,7 +772,7 @@ def support():
 @app.route('/variants/<product_id>')
 @login_required
 def variants_page(product_id):
-    if not db:
+    if users_collection is None:
         flash('Database not connected!', 'error')
         return redirect(url_for('dashboard'))
     
@@ -769,7 +796,7 @@ def variants_page(product_id):
 @app.route('/select-variant', methods=['POST'])
 @login_required
 def select_variant():
-    if not db:
+    if users_collection is None:
         flash('Database not connected!', 'error')
         return redirect(url_for('dashboard'))
     
@@ -828,7 +855,7 @@ def select_variant():
 @app.route('/checkout/<order_id>')
 @login_required
 def checkout(order_id):
-    if not db:
+    if users_collection is None:
         flash('Database not connected!', 'error')
         return redirect(url_for('dashboard'))
     
@@ -842,7 +869,7 @@ def checkout(order_id):
 @app.route('/apply-coupon', methods=['POST'])
 @login_required
 def apply_coupon():
-    if not db:
+    if users_collection is None:
         return jsonify({'error': 'Database not connected'}), 500
     
     data = request.get_json()
@@ -889,7 +916,7 @@ def apply_coupon():
 @app.route('/remove-coupon', methods=['POST'])
 @login_required
 def remove_coupon():
-    if not db:
+    if users_collection is None:
         return jsonify({'error': 'Database not connected'}), 500
     
     data = request.get_json()
@@ -928,7 +955,7 @@ def remove_coupon():
 @app.route('/success/<order_id>')
 @login_required
 def success_page(order_id):
-    if not db:
+    if users_collection is None:
         flash('Database not connected!', 'error')
         return redirect(url_for('dashboard'))
     
@@ -946,7 +973,7 @@ def success_page(order_id):
 @app.route('/process-payment/<order_id>', methods=['POST'])
 @login_required
 def process_payment(order_id):
-    if not db:
+    if users_collection is None:
         return jsonify({'error': 'Database not connected'}), 500
     
     order = orders_collection.find_one({'order_id': order_id, 'user_id': current_user.user_id})
@@ -1024,7 +1051,7 @@ def process_payment(order_id):
 @app.route('/add-money', methods=['POST'])
 @login_required
 def add_money():
-    if not db:
+    if users_collection is None:
         flash('Database not connected!', 'error')
         return redirect(url_for('login_page'))
     
@@ -1059,7 +1086,7 @@ def add_money():
 @app.route('/buy-product/<product_id>', methods=['POST'])
 @login_required
 def buy_product(product_id):
-    if not db:
+    if users_collection is None:
         flash('Database not connected!', 'error')
         return redirect(url_for('dashboard'))
     
@@ -1107,7 +1134,7 @@ def buy_product(product_id):
 @app.route('/notifications')
 @login_required
 def get_notifications():
-    if not db:
+    if notifications_collection is None:
         return jsonify([])
     
     notifications = list(notifications_collection.find({'user_id': current_user.user_id}).sort('created_at', -1))
@@ -1122,7 +1149,7 @@ def get_notifications():
 @app.route('/notifications/<notif_id>/read', methods=['POST'])
 @login_required
 def mark_notification_read(notif_id):
-    if not db:
+    if notifications_collection is None:
         return jsonify({'error': 'Database not connected'}), 500
     
     notification = notifications_collection.find_one({'_id': ObjectId(notif_id)})
@@ -1134,7 +1161,7 @@ def mark_notification_read(notif_id):
 @app.route('/notifications/mark-read', methods=['POST'])
 @login_required
 def mark_all_read():
-    if not db:
+    if notifications_collection is None:
         return jsonify({'error': 'Database not connected'}), 500
     
     notifications_collection.update_many(
@@ -1150,7 +1177,7 @@ def mark_all_read():
 @app.route('/admin')
 @login_required
 def admin_dashboard():
-    if not db or not current_user.is_admin:
+    if users_collection is None or not current_user.is_admin:
         flash('Access denied!', 'error')
         return redirect(url_for('login_page'))
     
@@ -1194,7 +1221,7 @@ def admin_dashboard():
 @app.route('/admin/delete-category/<category_id>', methods=['POST'])
 @login_required
 def delete_category(category_id):
-    if not db or not current_user.is_admin:
+    if categories_collection is None or not current_user.is_admin:
         flash('Access denied!', 'error')
         return redirect(url_for('login_page'))
     
@@ -1216,7 +1243,7 @@ def delete_category(category_id):
 @app.route('/admin/create-category', methods=['POST'])
 @login_required
 def create_category():
-    if not db or not current_user.is_admin:
+    if categories_collection is None or not current_user.is_admin:
         flash('Access denied!', 'error')
         return redirect(url_for('login_page'))
     
@@ -1243,7 +1270,7 @@ def create_category():
 @app.route('/admin/create-coupon', methods=['POST'])
 @login_required
 def create_coupon():
-    if not db or not current_user.is_admin:
+    if coupons_collection is None or not current_user.is_admin:
         flash('Access denied!', 'error')
         return redirect(url_for('login_page'))
     
@@ -1279,7 +1306,7 @@ def create_coupon():
 @app.route('/admin/delete-coupon/<coupon_id>', methods=['POST'])
 @login_required
 def delete_coupon(coupon_id):
-    if not db or not current_user.is_admin:
+    if coupons_collection is None or not current_user.is_admin:
         flash('Access denied!', 'error')
         return redirect(url_for('login_page'))
     
@@ -1299,7 +1326,7 @@ def delete_coupon(coupon_id):
 @app.route('/admin/add-variant-page')
 @login_required
 def add_variant_page():
-    if not db or not current_user.is_admin:
+    if variants_collection is None or not current_user.is_admin:
         flash('Access denied!', 'error')
         return redirect(url_for('login_page'))
     
@@ -1310,7 +1337,7 @@ def add_variant_page():
 @app.route('/admin/add-variant', methods=['POST'])
 @login_required
 def add_variant():
-    if not db or not current_user.is_admin:
+    if variants_collection is None or not current_user.is_admin:
         flash('Access denied!', 'error')
         return redirect(url_for('login_page'))
     
@@ -1352,7 +1379,7 @@ def add_variant():
 @app.route('/admin/delete-variant/<variant_id>', methods=['POST'])
 @login_required
 def delete_variant(variant_id):
-    if not db or not current_user.is_admin:
+    if variants_collection is None or not current_user.is_admin:
         flash('Access denied!', 'error')
         return redirect(url_for('login_page'))
     
@@ -1367,7 +1394,7 @@ def delete_variant(variant_id):
 @app.route('/admin/create-product', methods=['POST'])
 @login_required
 def create_product():
-    if not db or not current_user.is_admin:
+    if products_collection is None or not current_user.is_admin:
         flash('Access denied!', 'error')
         return redirect(url_for('login_page'))
     
@@ -1426,7 +1453,7 @@ def create_product():
 @app.route('/admin/delete-product/<product_id>', methods=['POST'])
 @login_required
 def delete_product(product_id):
-    if not db or not current_user.is_admin:
+    if products_collection is None or not current_user.is_admin:
         flash('Access denied!', 'error')
         return redirect(url_for('login_page'))
     
@@ -1440,7 +1467,7 @@ def delete_product(product_id):
 @app.route('/admin/update-product/<product_id>', methods=['POST'])
 @login_required
 def update_product(product_id):
-    if not db or not current_user.is_admin:
+    if products_collection is None or not current_user.is_admin:
         flash('Access denied!', 'error')
         return redirect(url_for('login_page'))
     
@@ -1478,7 +1505,7 @@ def update_product(product_id):
 @app.route('/admin/get-product/<product_id>')
 @login_required
 def get_product(product_id):
-    if not db or not current_user.is_admin:
+    if products_collection is None or not current_user.is_admin:
         return jsonify({'error': 'Unauthorized'}), 403
     
     product = products_collection.find_one({'_id': ObjectId(product_id)})
@@ -1521,7 +1548,7 @@ def get_product(product_id):
 @app.route('/admin/add-codes', methods=['POST'])
 @login_required
 def add_codes():
-    if not db or not current_user.is_admin:
+    if airdrop_codes_collection is None or not current_user.is_admin:
         flash('Access denied!', 'error')
         return redirect(url_for('login_page'))
     
@@ -1540,7 +1567,7 @@ def add_codes():
 @app.route('/admin/send-notification', methods=['POST'])
 @login_required
 def send_notification():
-    if not db or not current_user.is_admin:
+    if notifications_collection is None or not current_user.is_admin:
         flash('Access denied!', 'error')
         return redirect(url_for('login_page'))
     
@@ -1577,7 +1604,7 @@ def send_notification():
 @app.route('/admin/popup-on', methods=['POST'])
 @login_required
 def popup_on():
-    if not db or not current_user.is_admin:
+    if popup_collection is None or not current_user.is_admin:
         flash('Access denied!', 'error')
         return redirect(url_for('login_page'))
     
@@ -1593,7 +1620,7 @@ def popup_on():
 @app.route('/admin/popup-off', methods=['POST'])
 @login_required
 def popup_off():
-    if not db or not current_user.is_admin:
+    if popup_collection is None or not current_user.is_admin:
         flash('Access denied!', 'error')
         return redirect(url_for('login_page'))
     
@@ -1609,7 +1636,7 @@ def popup_off():
 @app.route('/admin/update-popup', methods=['POST'])
 @login_required
 def update_popup():
-    if not db or not current_user.is_admin:
+    if popup_collection is None or not current_user.is_admin:
         flash('Access denied!', 'error')
         return redirect(url_for('login_page'))
     
@@ -1637,7 +1664,7 @@ def update_popup():
 @app.route('/admin/maintenance-on', methods=['POST'])
 @login_required
 def maintenance_on():
-    if not db or not current_user.is_admin:
+    if maintenance_collection is None or not current_user.is_admin:
         flash('Access denied!', 'error')
         return redirect(url_for('login_page'))
     
@@ -1653,7 +1680,7 @@ def maintenance_on():
 @app.route('/admin/maintenance-off', methods=['POST'])
 @login_required
 def maintenance_off():
-    if not db or not current_user.is_admin:
+    if maintenance_collection is None or not current_user.is_admin:
         flash('Access denied!', 'error')
         return redirect(url_for('login_page'))
     
@@ -1669,7 +1696,7 @@ def maintenance_off():
 @app.route('/admin/update-maintenance', methods=['POST'])
 @login_required
 def update_maintenance():
-    if not db or not current_user.is_admin:
+    if maintenance_collection is None or not current_user.is_admin:
         flash('Access denied!', 'error')
         return redirect(url_for('login_page'))
     
@@ -1696,7 +1723,7 @@ def update_maintenance():
 @app.route('/admin/add-banner', methods=['POST'])
 @login_required
 def add_banner():
-    if not db or not current_user.is_admin:
+    if banners_collection is None or not current_user.is_admin:
         flash('Access denied!', 'error')
         return redirect(url_for('login_page'))
     
@@ -1720,7 +1747,7 @@ def add_banner():
 @app.route('/admin/delete-banner/<banner_id>', methods=['POST'])
 @login_required
 def delete_banner(banner_id):
-    if not db or not current_user.is_admin:
+    if banners_collection is None or not current_user.is_admin:
         flash('Access denied!', 'error')
         return redirect(url_for('login_page'))
     
@@ -1735,7 +1762,7 @@ def delete_banner(banner_id):
 @app.route('/admin/update-user-balance', methods=['POST'])
 @login_required
 def update_user_balance():
-    if not db or not current_user.is_admin:
+    if users_collection is None or not current_user.is_admin:
         flash('Access denied!', 'error')
         return redirect(url_for('login_page'))
     
