@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>My Orders - JubayerXtools</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <style>
+        :root {
+            --primary: #24C7F2;
+            --primary-glow: rgba(36, 199, 242, 0.25);
+            --primary-border: rgba(36, 199, 242, 0.15);
+            --primary-hover: rgba(36, 199, 242, 0.08);
+            --primary-light: rgba(36, 199, 242, 0.04);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            padding: 12px 40px;
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--primary-border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-logo {
+            display: flex; align-items: center; gap: 10px;
+            padding: 4px 12px;
+            border: 2px solid var(--primary-border);
+            border-radius: 12px;
+            transition: 0.4s;
+            background: rgba(36,199,242,0.03);
+        }
+        .nav-logo:hover { border-color: var(--primary); box-shadow: 0 0 30px var(--primary-glow); }
+        .nav-logo img { height: 35px; width: auto; }
+        .nav-logo span {
+            font-size: 1.3rem; font-weight: 900;
+            color: var(--primary);
+            text-shadow: 0 0 20px var(--primary-glow);
+        }
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .nav-right a {
+            color: #94a3b8; font-weight: 500; font-size: 0.9rem;
+            transition: 0.3s; text-decoration: none;
+        }
+        .nav-right a:hover { color: #ffffff; }
+        .nav-right .back-btn {
+            padding: 8px 20px;
+            border: 1px solid var(--primary-border);
+            border-radius: 50px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: 0.3s;
+        }
+        .nav-right .back-btn:hover {
+            border-color: var(--primary);
+            color: #ffffff;
+            background: var(--primary-hover);
+        }
+
+        /* ===== MAIN ===== */
+        .main-content { margin-top: 80px; padding: 30px 40px; max-width: 1100px; margin-left: auto; margin-right: auto; }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        .page-title span { color: var(--primary); text-shadow: 0 0 20px var(--primary-glow); }
+        .page-subtitle { color: #94a3b8; margin-bottom: 30px; }
+
+        /* ===== ORDERS CARD ===== */
+        .orders-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--primary-border);
+            border-radius: 16px;
+            padding: 25px;
+        }
+
+        /* ===== TABLE ===== */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        table th {
+            text-align: left; padding: 12px;
+            color: #94a3b8; font-weight: 600; font-size: 0.8rem;
+            border-bottom: 1px solid var(--primary-border);
+        }
+        table td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.85rem; }
+        table tr:hover td { background: var(--primary-hover); }
+
+        .badge-status {
+            padding: 3px 12px; border-radius: 50px;
+            font-size: 0.7rem; font-weight: 600;
+        }
+        .badge-completed { background: rgba(34,197,94,0.12); color: #4ade80; }
+        .badge-pending { background: rgba(251,191,36,0.12); color: #fbbf24; }
+
+        .view-btn {
+            padding: 4px 14px;
+            border: 1px solid var(--primary);
+            border-radius: 50px;
+            background: transparent;
+            color: var(--primary);
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+        .view-btn:hover {
+            background: var(--primary);
+            color: #0a0a0a;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .empty-state { text-align: center; padding: 60px 20px; color: #64748b; }
+        .empty-state i { font-size: 3rem; display: block; margin-bottom: 12px; color: var(--primary); }
+
+        /* ========================================
+           POPUP
+        ======================================== */
+        .popup-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10,10,10,0.85); backdrop-filter: blur(12px);
+            display: none; justify-content: center; align-items: center;
+            z-index: 9999;
+        }
+        .popup-overlay.active { display: flex; }
+        .popup-box {
+            background: #141b2d;
+            border: 1px solid var(--primary-border);
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            padding: 35px 35px 30px;
+            animation: popIn 0.3s ease;
+            position: relative;
+        }
+        @keyframes popIn {
+            from { transform: scale(0.9) translateY(20px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .popup-box .close-popup {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: 0.3s;
+            line-height: 1;
+        }
+        .popup-box .close-popup:hover { color: #ffffff; transform: rotate(90deg); }
+
+        .popup-box .popup-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        .popup-box .popup-product {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        /* ===== CODE BOX ===== */
+        .popup-box .code-box {
+            background: rgba(36,199,242,0.06);
+            border: 1px solid var(--primary-border);
+            border-radius: 12px;
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .popup-box .code-box .code-value {
+            font-size: 0.95rem;
+            color: var(--primary);
+            font-weight: 600;
+            word-break: break-all;
+            flex: 1;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+        }
+        .popup-box .code-box .copy-btn {
+            padding: 6px 18px;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary);
+            color: #0a0a0a;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            font-family: 'Inter', sans-serif;
+        }
+        .popup-box .code-box .copy-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+        .popup-box .code-box .copy-btn.copied {
+            background: #22c55e;
+            color: #ffffff;
+        }
+
+        /* ===== FILE DOWNLOAD ===== */
+        .popup-box .download-btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: var(--primary);
+            color: #0a0a0a;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            text-align: center;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-family: 'Inter', sans-serif;
+        }
+        .popup-box .download-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px var(--primary-glow);
+        }
+
+        .popup-box .close-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--primary-border);
+            border-radius: 50px;
+            background: transparent;
+            color: #94a3b8;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+        .popup-box .close-btn:hover {
+            background: var(--primary-hover);
+            color: #ffffff;
+        }
+
+        /* ========================================
+           RESPONSIVE
+        ======================================== */
+        @media (max-width: 768px) {
+            .navbar { padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
+            .nav-logo { padding: 2px 8px; border-width: 1.5px; border-radius: 8px; gap: 6px; }
+            .nav-logo img { height: 28px; }
+            .nav-logo span { font-size: 1rem; }
+            .nav-right { gap: 10px; }
+            .nav-right .back-btn { padding: 5px 14px; font-size: 0.75rem; }
+
+            .main-content { padding: 15px 12px; margin-top: 80px; }
+            .page-title { font-size: 1.5rem; }
+
+            .orders-card { padding: 15px; }
+            table { font-size: 0.8rem; }
+            table th, table td { padding: 8px; }
+
+            .popup-box { padding: 25px 20px 20px; }
+            .popup-box .code-box { flex-direction: column; align-items: stretch; text-align: center; }
+        }
+
+        @media (max-width: 480px) {
+            table { font-size: 0.7rem; }
+            table th, table td { padding: 6px; }
+            .view-btn { padding: 3px 10px; font-size: 0.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <a href="/" class="nav-logo">
+            <img src="https://i.ibb.co.com/KxSnyTjy/635d5463-6cd3-485e-bd05-907c07468d3a.png" alt="JubayerXtools">
+            <span>JubayerXtools</span>
+        </a>
+        <div class="nav-right">
+            <a href="/dashboard" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </div>
+    </nav>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main-content">
+
+        <h1 class="page-title">My <span>Orders</span></h1>
+        <p class="page-subtitle">View all your order history</p>
+
+        <div class="orders-card">
+            {% if orders %}
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Item</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>#{{ order.order_id }}</td>
+                            <td>{{ order.item_name }}</td>
+                            <td>৳{{ "%.2f"|format(order.item_price) }}</td>
+                            <td>
+                                <span class="badge-status badge-{{ order.status }}">
+                                    {{ order.status|capitalize }}
+                                </span>
+                            </td>
+                            <td>{{ order.created_at.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                <button class="view-btn" onclick="openPopup({{ order.id }})">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <p>No orders yet. Start shopping!</p>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <!-- ========================================
+       POPUP
+    ======================================== -->
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup-box">
+            <button class="close-popup" onclick="closePopup()">&times;</button>
+            <div class="popup-title" id="popupTitle">Order Details</div>
+            <div class="popup-product" id="popupProduct">Product Name</div>
+
+            <!-- Code Box (Code Type) -->
+            <div class="code-box" id="codeBox" style="display:none;">
+                <span class="code-value" id="codeValue">CODE-XXXX-XXXX</span>
+                <button class="copy-btn" onclick="copyCode()"><i class="fas fa-copy"></i> Copy</button>
+            </div>
+
+            <!-- Download Button (File Type) -->
+            <a href="#" target="_blank" class="download-btn" id="downloadBtn" style="display:none;">
+                <i class="fas fa-download"></i> Download File
+            </a>
+
+            <!-- Close Button -->
+            <button class="close-btn" onclick="closePopup()">Close</button>
+        </div>
+    </div>
+
+    <!-- ========================================
+       JAVASCRIPT
+    ======================================== -->
+    <script>
+        // ===== Order Data from Flask (JSON Safe) =====
+        const ordersData = {{ orders_data|tojson|safe }};
+
+        // ===== OPEN POPUP =====
+        function openPopup(orderId) {
+            const order = ordersData.find(o => o.id === orderId);
+            if (!order) return;
+
+            document.getElementById('popupTitle').textContent = 'Order #' + order.order_id;
+            document.getElementById('popupProduct').textContent = order.item_name;
+
+            const codeBox = document.getElementById('codeBox');
+            const downloadBtn = document.getElementById('downloadBtn');
+
+            // Check if order has code or file link
+            if (order.code_used) {
+                // Check if code is a link (file type)
+                if (order.code_used.startsWith('http://') || order.code_used.startsWith('https://')) {
+                    // File Type - Show Download Button
+                    codeBox.style.display = 'none';
+                    downloadBtn.style.display = 'block';
+                    downloadBtn.href = order.code_used;
+                    downloadBtn.textContent = ' Download File';
+                    downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download File';
+                } else {
+                    // Code Type - Show Code Box
+                    codeBox.style.display = 'flex';
+                    downloadBtn.style.display = 'none';
+                    document.getElementById('codeValue').textContent = order.code_used;
+                }
+            } else {
+                // No code or link available
+                codeBox.style.display = 'none';
+                downloadBtn.style.display = 'none';
+                document.getElementById('popupProduct').textContent = order.item_name + ' (No code/link available)';
+            }
+
+            document.getElementById('popupOverlay').classList.add('active');
+        }
+
+        // ===== CLOSE POPUP =====
+        function closePopup() {
+            document.getElementById('popupOverlay').classList.remove('active');
+        }
+
+        // Close on outside click
+        document.getElementById('popupOverlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePopup();
+            }
+        });
+
+        // ===== COPY CODE =====
+        function copyCode() {
+            const code = document.getElementById('codeValue').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                    btn.classList.remove('copied');
+                }, 2500);
+            });
+        }
+    </script>
+
+</body>
+</html>

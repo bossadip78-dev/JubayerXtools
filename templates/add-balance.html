@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Add Balance - JubayerXtools</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <style>
+        :root {
+            --primary: #24C7F2;
+            --primary-glow: rgba(36, 199, 242, 0.25);
+            --primary-border: rgba(36, 199, 242, 0.15);
+            --primary-hover: rgba(36, 199, 242, 0.08);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        /* ===== LOADING SCREEN ===== */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+        #loading-screen.hide {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loader-logo {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: rgba(36, 199, 242, 0.04);
+            border: 3px solid rgba(36, 199, 242, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulseGlow 1.8s ease-in-out infinite;
+            margin-bottom: 28px;
+            position: relative;
+            padding: 14px;
+            overflow: hidden;
+        }
+        .loader-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
+            display: block;
+        }
+        .loader-logo::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top: 3px solid #24C7F2;
+            border-right: 3px solid #24C7F2;
+            animation: spin 1s linear infinite;
+        }
+        .loader-logo::after {
+            content: '';
+            position: absolute;
+            top: -22px;
+            left: -22px;
+            right: -22px;
+            bottom: -22px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(36,199,242,0.08), transparent 70%);
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 30px rgba(36,199,242,0.05), 0 0 80px rgba(36,199,242,0.02); }
+            50% { box-shadow: 0 0 70px rgba(36,199,242,0.25), 0 0 120px rgba(36,199,242,0.1); }
+        }
+
+        .loader-text {
+            font-size: 2.4rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+        }
+        .loader-text span {
+            color: #24C7F2;
+            text-shadow: 0 0 40px rgba(36, 199, 242, 0.4);
+        }
+
+        .loader-sub {
+            color: #64748b;
+            font-size: 0.9rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            animation: fadeInOut 2s ease-in-out infinite;
+        }
+
+        .loader-progress {
+            width: 260px;
+            height: 4px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            margin-top: 24px;
+            overflow: hidden;
+            position: relative;
+        }
+        .loader-progress .bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #24C7F2, #8b5cf6);
+            border-radius: 10px;
+            animation: progressBar 2.5s ease-in-out infinite;
+        }
+
+        .loader-progress-dots {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+        }
+        .loader-progress-dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(36,199,242,0.15);
+            animation: dotProgress 1.8s ease-in-out infinite;
+        }
+        .loader-progress-dots span:nth-child(1) { animation-delay: 0s; }
+        .loader-progress-dots span:nth-child(2) { animation-delay: 0.3s; }
+        .loader-progress-dots span:nth-child(3) { animation-delay: 0.6s; }
+        .loader-progress-dots span:nth-child(4) { animation-delay: 0.9s; }
+        .loader-progress-dots span:nth-child(5) { animation-delay: 1.2s; }
+
+        @keyframes dotProgress {
+            0%, 100% { transform: scale(0.5); opacity: 0.2; background: rgba(36,199,242,0.15); }
+            50% { transform: scale(1.2); opacity: 1; background: #24C7F2; box-shadow: 0 0 20px rgba(36,199,242,0.4); }
+        }
+
+        @keyframes progressBar {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 600px) {
+            .loader-logo { width: 110px; height: 110px; padding: 10px; }
+            .loader-text { font-size: 1.8rem; }
+            .loader-progress { width: 200px; }
+            .loader-sub { font-size: 0.75rem; letter-spacing: 4px; }
+        }
+        @media (max-width: 400px) {
+            .loader-logo { width: 80px; height: 80px; padding: 6px; }
+            .loader-text { font-size: 1.4rem; }
+            .loader-progress { width: 160px; }
+            .loader-sub { font-size: 0.6rem; letter-spacing: 3px; }
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            padding: 12px 40px;
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--primary-border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-logo {
+            display: flex; align-items: center; gap: 10px;
+            padding: 4px 12px;
+            border: 2px solid var(--primary-border);
+            border-radius: 12px;
+            transition: 0.4s;
+            background: rgba(36,199,242,0.03);
+        }
+        .nav-logo:hover { border-color: var(--primary); box-shadow: 0 0 30px var(--primary-glow); }
+        .nav-logo img { height: 35px; width: auto; }
+        .nav-logo span {
+            font-size: 1.3rem; font-weight: 900;
+            color: var(--primary);
+            text-shadow: 0 0 20px var(--primary-glow);
+        }
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .nav-right a {
+            color: #94a3b8; font-weight: 500; font-size: 0.9rem;
+            transition: 0.3s; text-decoration: none;
+        }
+        .nav-right a:hover { color: #ffffff; }
+        .nav-right .back-btn {
+            padding: 8px 20px;
+            border: 1px solid var(--primary-border);
+            border-radius: 50px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: 0.3s;
+        }
+        .nav-right .back-btn:hover {
+            border-color: var(--primary);
+            color: #ffffff;
+            background: var(--primary-hover);
+        }
+
+        /* ===== MAIN ===== */
+        .main-content {
+            margin-top: 80px;
+            padding: 30px 40px;
+            max-width: 520px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .page-title span { color: var(--primary); text-shadow: 0 0 20px var(--primary-glow); }
+        .page-subtitle { text-align: center; color: #94a3b8; margin-bottom: 30px; }
+
+        /* ===== BALANCE CARD ===== */
+        .balance-card {
+            background: linear-gradient(135deg, rgba(36,199,242,0.08), rgba(139,92,246,0.08));
+            border: 1px solid var(--primary-border);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: 0.3s;
+        }
+        .balance-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 40px var(--primary-glow);
+        }
+        .balance-card .label {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .balance-card .amount {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: var(--primary);
+            text-shadow: 0 0 40px var(--primary-glow);
+        }
+
+        /* ===== PAYMENT METHOD BADGE ===== */
+        .payment-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: rgba(36,199,242,0.06);
+            border: 1px solid var(--primary-border);
+            border-radius: 50px;
+            padding: 8px 20px;
+            margin-bottom: 25px;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+        .payment-badge i {
+            color: var(--primary);
+            font-size: 1rem;
+        }
+        .payment-badge span {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* ===== FORM ===== */
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block; margin-bottom: 8px;
+            color: #cbd5e1; font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .form-group input {
+            width: 100%; padding: 14px 18px;
+            border: 1px solid var(--primary-border);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.04);
+            color: #ffffff;
+            font-size: 1.2rem;
+            text-align: center;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+        .form-group input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 4px var(--primary-glow);
+            background: rgba(255,255,255,0.06);
+        }
+        .form-group input::placeholder { color: #64748b; }
+
+        /* ===== PRESET AMOUNTS ===== */
+        .preset-amounts {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .preset-btn {
+            padding: 10px 8px;
+            border: 1px solid var(--primary-border);
+            border-radius: 10px;
+            background: transparent;
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+        .preset-btn:hover {
+            border-color: var(--primary);
+            color: #ffffff;
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+        .preset-btn.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: #0a0a0a;
+            box-shadow: 0 0 30px var(--primary-glow);
+            transform: translateY(-2px);
+        }
+
+        /* ===== LIMIT TEXT ===== */
+        .limit-text {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.8rem;
+            margin-bottom: 20px;
+        }
+        .limit-text span { color: var(--primary); font-weight: 600; }
+
+        /* ===== BUTTON ===== */
+        .add-btn {
+            width: 100%; padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: var(--primary);
+            color: #0a0a0a;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            min-height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .add-btn:hover:not(.processing) {
+            transform: scale(1.02);
+            box-shadow: 0 0 40px var(--primary-glow);
+        }
+        .add-btn .btn-text { display: flex; align-items: center; justify-content: center; gap: 10px; }
+
+        /* ===== PROCESSING STATE ===== */
+        .add-btn.processing {
+            pointer-events: none;
+            opacity: 0.9;
+        }
+        .add-btn.processing .btn-text {
+            visibility: hidden;
+            position: absolute;
+        }
+        .add-btn.processing .spinner {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #0a0a0a;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .add-btn.processing .spinner i {
+            animation: spin 0.7s linear infinite;
+        }
+
+        /* ===== FLASH MESSAGES ===== */
+        .flash-messages { margin-bottom: 20px; }
+        .flash-message {
+            padding: 12px 18px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .flash-message.success {
+            background: rgba(34,197,94,0.1);
+            color: #4ade80;
+            border-left: 3px solid #22c55e;
+        }
+        .flash-message.error {
+            background: rgba(239,68,68,0.1);
+            color: #f87171;
+            border-left: 3px solid #ef4444;
+        }
+        .flash-message i { font-size: 1.1rem; }
+
+        /* ========================================
+           RESPONSIVE
+        ======================================== */
+        @media (max-width: 768px) {
+            .navbar { padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
+            .nav-logo { padding: 2px 8px; border-width: 1.5px; border-radius: 8px; gap: 6px; }
+            .nav-logo img { height: 28px; }
+            .nav-logo span { font-size: 1rem; }
+            .nav-right { gap: 10px; }
+            .nav-right .back-btn { padding: 5px 14px; font-size: 0.75rem; }
+
+            .main-content { padding: 15px 12px; margin-top: 80px; }
+            .page-title { font-size: 1.5rem; }
+            .balance-card .amount { font-size: 2.2rem; }
+            .preset-amounts { grid-template-columns: repeat(4, 1fr); }
+            .payment-badge { font-size: 0.7rem; padding: 6px 14px; }
+        }
+
+        @media (max-width: 480px) {
+            .preset-amounts { grid-template-columns: repeat(3, 1fr); }
+            .preset-btn { font-size: 0.75rem; padding: 8px 6px; }
+            .add-btn { font-size: 1rem; padding: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== LOADING SCREEN ===== -->
+    <div id="loading-screen">
+        <div class="loader-logo">
+            <img src="https://i.ibb.co.com/KxSnyTjy/635d5463-6cd3-485e-bd05-907c07468d3a.png" alt="JubayerXtools Logo">
+        </div>
+        <div class="loader-text"><span>Jubayer</span>Xtools</div>
+        <div class="loader-sub">Loading...</div>
+        <div class="loader-progress">
+            <div class="bar"></div>
+        </div>
+        <div class="loader-progress-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <a href="/" class="nav-logo">
+            <img src="https://i.ibb.co.com/KxSnyTjy/635d5463-6cd3-485e-bd05-907c07468d3a.png" alt="JubayerXtools">
+            <span>JubayerXtools</span>
+        </a>
+        <div class="nav-right">
+            <a href="/dashboard" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </div>
+    </nav>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main-content">
+
+        <!-- Flash Messages -->
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">
+                            <i class="fas {% if category == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <h1 class="page-title">Add <span>Balance</span></h1>
+        <p class="page-subtitle">Add money to your wallet via secure payment</p>
+
+        <!-- Payment Method Badge -->
+        <div class="payment-badge">
+            <i class="fas fa-shield-alt"></i>
+            Secure Payment via <span>Bohudur</span>
+            <i class="fas fa-lock"></i>
+        </div>
+
+        <!-- Balance -->
+        <div class="balance-card">
+            <div class="label">Current Balance</div>
+            <div class="amount">৳{{ "%.2f"|format(user.balance) }}</div>
+        </div>
+
+        <!-- Form -->
+        <form id="addBalanceForm">
+            <div class="form-group">
+                <label>Enter Amount (৳)</label>
+                <input type="number" name="amount" id="amountInput" placeholder="Enter amount" min="10" max="50000" step="1" required autofocus>
+            </div>
+
+            <!-- Preset Amounts -->
+            <div class="preset-amounts">
+                <button type="button" class="preset-btn" onclick="setAmount(10)">৳10</button>
+                <button type="button" class="preset-btn" onclick="setAmount(50)">৳50</button>
+                <button type="button" class="preset-btn" onclick="setAmount(100)">৳100</button>
+                <button type="button" class="preset-btn" onclick="setAmount(500)">৳500</button>
+                <button type="button" class="preset-btn" onclick="setAmount(1000)">৳1000</button>
+                <button type="button" class="preset-btn" onclick="setAmount(2000)">৳2000</button>
+                <button type="button" class="preset-btn" onclick="setAmount(5000)">৳5000</button>
+                <button type="button" class="preset-btn" onclick="setAmount(10000)">৳10000</button>
+            </div>
+
+            <div class="limit-text">
+                <i class="fas fa-info-circle" style="color:var(--primary);"></i>
+                Minimum: <span>৳10</span> &nbsp;|&nbsp; Maximum: <span>৳50,000</span>
+            </div>
+
+            <button type="submit" class="add-btn" id="addBtn">
+                <span class="btn-text"><i class="fas fa-plus-circle"></i> Add Balance</span>
+            </button>
+        </form>
+
+        <div style="text-align:center;margin-top:18px;color:#64748b;font-size:0.75rem;">
+            <i class="fas fa-clock" style="color:var(--primary);"></i>
+            Payment will be processed instantly via Bohudur
+        </div>
+
+    </div>
+
+    <script>
+        // ========================================
+        // LOADING SCREEN (2 বার ভাইব্রেট হবে)
+        // ========================================
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const bar = document.querySelector('.loader-progress .bar');
+                bar.style.animation = 'none';
+                void bar.offsetHeight;
+                bar.style.animation = 'progressBar 2.5s ease-in-out infinite';
+
+                setTimeout(function() {
+                    document.getElementById('loading-screen').classList.add('hide');
+                }, 2500);
+            }, 2500);
+        });
+
+        // ========================================
+        // PRESET AMOUNT
+        // ========================================
+        function setAmount(amount) {
+            const input = document.getElementById('amountInput');
+            input.value = amount;
+            input.focus();
+
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (parseInt(btn.textContent.replace(/[^0-9]/g, '')) === amount) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // ========================================
+        // INPUT VALIDATION
+        // ========================================
+        document.getElementById('amountInput').addEventListener('input', function() {
+            const val = parseInt(this.value);
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (parseInt(btn.textContent.replace(/[^0-9]/g, '')) === val) {
+                    btn.classList.add('active');
+                }
+            });
+        });
+
+        // ========================================
+        // FORM SUBMIT - BOHUDUR PAYMENT
+        // ========================================
+        document.getElementById('addBalanceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const input = document.getElementById('amountInput');
+            const btn = document.getElementById('addBtn');
+            const amount = parseFloat(input.value);
+
+            // Validate
+            if (isNaN(amount) || amount < 10) {
+                alert('❌ Minimum deposit is ৳10!');
+                input.focus();
+                return;
+            }
+            if (amount > 50000) {
+                alert('❌ Maximum deposit is ৳50,000!');
+                input.focus();
+                return;
+            }
+
+            // Show processing
+            btn.classList.add('processing');
+            btn.innerHTML = `
+                <span class="spinner">
+                    <i class="fas fa-spinner"></i> Creating Payment...
+                </span>
+                <span class="btn-text"><i class="fas fa-plus-circle"></i> Add Balance</span>
+            `;
+
+            // Create payment via AJAX
+            fetch('/create-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    amount: amount
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                btn.classList.remove('processing');
+                btn.innerHTML = `<span class="btn-text"><i class="fas fa-plus-circle"></i> Add Balance</span>`;
+
+                if (data.success) {
+                    // Redirect to payment page
+                    window.location.href = data.payment_url;
+                } else {
+                    alert('❌ Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                btn.classList.remove('processing');
+                btn.innerHTML = `<span class="btn-text"><i class="fas fa-plus-circle"></i> Add Balance</span>`;
+                alert('❌ Error creating payment: ' + error.message);
+            });
+        });
+
+        // ========================================
+        // ENTER KEY SUPPORT
+        // ========================================
+        document.getElementById('amountInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('addBalanceForm').dispatchEvent(new Event('submit'));
+            }
+        });
+    </script>
+
+</body>
+</html>

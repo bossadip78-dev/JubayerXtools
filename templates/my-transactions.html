@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>My Transactions - JubayerXtools</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <style>
+        :root {
+            --primary: #24C7F2;
+            --primary-glow: rgba(36, 199, 242, 0.25);
+            --primary-border: rgba(36, 199, 242, 0.15);
+            --primary-hover: rgba(36, 199, 242, 0.08);
+            --primary-light: rgba(36, 199, 242, 0.04);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            padding: 12px 40px;
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--primary-border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-logo {
+            display: flex; align-items: center; gap: 10px;
+            padding: 4px 12px;
+            border: 2px solid var(--primary-border);
+            border-radius: 12px;
+            transition: 0.4s;
+            background: rgba(36,199,242,0.03);
+        }
+        .nav-logo:hover { border-color: var(--primary); box-shadow: 0 0 30px var(--primary-glow); }
+        .nav-logo img { height: 35px; width: auto; }
+        .nav-logo span {
+            font-size: 1.3rem; font-weight: 900;
+            color: var(--primary);
+            text-shadow: 0 0 20px var(--primary-glow);
+        }
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .nav-right a {
+            color: #94a3b8; font-weight: 500; font-size: 0.9rem;
+            transition: 0.3s; text-decoration: none;
+        }
+        .nav-right a:hover { color: #ffffff; }
+        .nav-right .back-btn {
+            padding: 8px 20px;
+            border: 1px solid var(--primary-border);
+            border-radius: 50px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: 0.3s;
+        }
+        .nav-right .back-btn:hover {
+            border-color: var(--primary);
+            color: #ffffff;
+            background: var(--primary-hover);
+        }
+
+        /* ===== MAIN ===== */
+        .main-content { margin-top: 80px; padding: 30px 40px; max-width: 1100px; margin-left: auto; margin-right: auto; }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        .page-title span { color: var(--primary); text-shadow: 0 0 20px var(--primary-glow); }
+        .page-subtitle { color: #94a3b8; margin-bottom: 30px; }
+
+        /* ===== TRANSACTIONS CARD ===== */
+        .transactions-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--primary-border);
+            border-radius: 16px;
+            padding: 25px;
+        }
+        .transactions-card .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+        }
+        .transactions-card .card-title i { font-size: 1.2rem; }
+
+        /* ===== STATS ROW ===== */
+        .stats-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .stats-row .stat-box {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--primary-border);
+            border-radius: 12px;
+            padding: 15px 25px;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+        }
+        .stats-row .stat-box .number {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-shadow: 0 0 20px var(--primary-glow);
+        }
+        .stats-row .stat-box .label {
+            color: #94a3b8;
+            font-size: 0.75rem;
+            margin-top: 2px;
+        }
+
+        /* ===== TABLE ===== */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        table th {
+            text-align: left; padding: 12px;
+            color: #94a3b8; font-weight: 600; font-size: 0.8rem;
+            border-bottom: 1px solid var(--primary-border);
+        }
+        table td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.85rem; }
+        table tr:hover td { background: var(--primary-hover); }
+
+        .badge-status {
+            padding: 3px 12px; border-radius: 50px;
+            font-size: 0.7rem; font-weight: 600;
+        }
+        .badge-add { background: rgba(34,197,94,0.12); color: #4ade80; }
+        .badge-purchase { background: rgba(251,191,36,0.12); color: #fbbf24; }
+        .badge-refund { background: rgba(59,130,246,0.12); color: #60a5fa; }
+
+        .empty-state { text-align: center; padding: 40px 20px; color: #64748b; }
+        .empty-state i { font-size: 3rem; display: block; margin-bottom: 12px; color: var(--primary); }
+
+        /* ========================================
+           RESPONSIVE
+        ======================================== */
+        @media (max-width: 768px) {
+            .navbar { padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
+            .nav-logo { padding: 2px 8px; border-width: 1.5px; border-radius: 8px; gap: 6px; }
+            .nav-logo img { height: 28px; }
+            .nav-logo span { font-size: 1rem; }
+            .nav-right { gap: 10px; }
+            .nav-right .back-btn { padding: 5px 14px; font-size: 0.75rem; }
+
+            .main-content { padding: 15px 12px; margin-top: 80px; }
+            .page-title { font-size: 1.5rem; }
+
+            .transactions-card { padding: 20px; }
+            .stats-row { gap: 10px; }
+            .stats-row .stat-box { padding: 12px 15px; min-width: 80px; }
+            .stats-row .stat-box .number { font-size: 1.1rem; }
+        }
+
+        @media (max-width: 480px) {
+            .stats-row { flex-direction: column; }
+        }
+
+        @media (min-width: 1024px) {
+            .nav-logo { padding: 6px 18px; border-width: 2.5px; border-radius: 14px; gap: 12px; }
+            .nav-logo img { height: 42px; }
+            .nav-logo span { font-size: 1.5rem; }
+
+            .transactions-card { padding: 35px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <a href="/" class="nav-logo">
+            <img src="https://i.ibb.co.com/KxSnyTjy/635d5463-6cd3-485e-bd05-907c07468d3a.png" alt="JubayerXtools">
+            <span>JubayerXtools</span>
+        </a>
+        <div class="nav-right">
+            <a href="/dashboard" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </div>
+    </nav>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main-content">
+
+        <h1 class="page-title">My <span>Transactions</span></h1>
+        <p class="page-subtitle">View all your transaction history</p>
+
+        <!-- ===== TRANSACTIONS CARD ===== -->
+        <div class="transactions-card">
+
+            <!-- Stats -->
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="number">{{ transactions|length }}</div>
+                    <div class="label">Total Transactions</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">৳{{ "%.2f"|format(total_deposit) }}</div>
+                    <div class="label">Total Deposit</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">৳{{ "%.2f"|format(total_spent) }}</div>
+                    <div class="label">Total Spent</div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            {% if transactions %}
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tx in transactions %}
+                        <tr>
+                            <td>#{{ tx.id }}</td>
+                            <td>
+                                <span class="badge-status badge-{{ tx.type }}">
+                                    {{ tx.type|capitalize }}
+                                </span>
+                            </td>
+                            <td style="color: {% if tx.type == 'add' or tx.type == 'refund' %}#4ade80{% else %}#f87171{% endif %}; font-weight: 600;">
+                                {% if tx.type == 'add' or tx.type == 'refund' %}+{% else %}-{% endif %}
+                                ৳{{ "%.2f"|format(tx.amount) }}
+                            </td>
+                            <td>{{ tx.description }}</td>
+                            <td>
+                                <span class="badge-status" style="background: {% if tx.status == 'completed' %}rgba(34,197,94,0.12);color:#4ade80;{% else %}rgba(251,191,36,0.12);color:#fbbf24;{% endif %}">
+                                    {{ tx.status|capitalize }}
+                                </span>
+                            </td>
+                            <td>{{ tx.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-exchange-alt"></i>
+                <p>No transactions yet.</p>
+            </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</body>
+</html>

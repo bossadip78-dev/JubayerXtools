@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Add Variant - JubayerXtools</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <style>
+        :root {
+            --primary: #24C7F2;
+            --primary-glow: rgba(36, 199, 242, 0.25);
+            --primary-border: rgba(36, 199, 242, 0.15);
+            --primary-hover: rgba(36, 199, 242, 0.08);
+            --primary-light: rgba(36, 199, 242, 0.04);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            padding: 12px 40px;
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--primary-border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-logo {
+            display: flex; align-items: center; gap: 10px;
+            padding: 4px 12px;
+            border: 2px solid var(--primary-border);
+            border-radius: 12px;
+            transition: 0.4s;
+            background: rgba(36,199,242,0.03);
+        }
+        .nav-logo:hover { border-color: var(--primary); box-shadow: 0 0 30px var(--primary-glow); }
+        .nav-logo img { height: 35px; width: auto; }
+        .nav-logo span {
+            font-size: 1.3rem; font-weight: 900;
+            color: var(--primary);
+            text-shadow: 0 0 20px var(--primary-glow);
+        }
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .nav-right a {
+            color: #94a3b8; font-weight: 500; font-size: 0.9rem;
+            transition: 0.3s; text-decoration: none;
+        }
+        .nav-right a:hover { color: #ffffff; }
+        .nav-right .back-btn {
+            padding: 8px 20px;
+            border: 1px solid var(--primary-border);
+            border-radius: 50px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: 0.3s;
+        }
+        .nav-right .back-btn:hover {
+            border-color: var(--primary);
+            color: #ffffff;
+            background: var(--primary-hover);
+        }
+
+        /* ===== MAIN ===== */
+        .main-content {
+            margin-top: 80px;
+            padding: 30px 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .page-title span { color: var(--primary); text-shadow: 0 0 20px var(--primary-glow); }
+        .page-subtitle { text-align: center; color: #94a3b8; margin-bottom: 30px; }
+
+        /* ===== CARD ===== */
+        .card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--primary-border);
+            border-radius: 16px;
+            padding: 30px 35px;
+            margin-bottom: 25px;
+        }
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+        }
+        .card-title i { font-size: 1.2rem; }
+
+        /* ===== FORM ===== */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px 20px;
+        }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select {
+            padding: 10px 14px;
+            border: 1px solid var(--primary-border);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.04);
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 4px var(--primary-glow);
+        }
+        .form-group input::placeholder {
+            color: #64748b;
+        }
+        .form-group .hint {
+            color: #64748b;
+            font-size: 0.7rem;
+            margin-top: 4px;
+        }
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 10px 30px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: #0a0a0a;
+        }
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px var(--primary-glow);
+        }
+        .btn-danger {
+            background: #ef4444;
+            color: #ffffff;
+        }
+        .btn-danger:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(239,68,68,0.3);
+        }
+        .btn-sm {
+            padding: 4px 14px;
+            font-size: 0.75rem;
+        }
+        .btn-block {
+            width: 100%;
+            justify-content: center;
+            padding: 14px;
+        }
+
+        /* ===== FLASH MESSAGES ===== */
+        .flash-messages { margin-bottom: 20px; }
+        .flash-message {
+            padding: 12px 18px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        .flash-message.success {
+            background: rgba(34,197,94,0.1);
+            color: #4ade80;
+            border-left: 3px solid #22c55e;
+        }
+        .flash-message.error {
+            background: rgba(239,68,68,0.1);
+            color: #f87171;
+            border-left: 3px solid #ef4444;
+        }
+
+        /* ===== VARIANT LIST ===== */
+        .variant-list {
+            margin-top: 5px;
+        }
+        .variant-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 8px;
+            margin-bottom: 6px;
+            border: 1px solid rgba(255,255,255,0.04);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .variant-item .vname {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .variant-item .vprice {
+            color: #4ade80;
+            font-weight: 600;
+        }
+        .variant-item .vmeta {
+            color: #94a3b8;
+            font-size: 0.8rem;
+        }
+        .variant-item .vproduct {
+            color: #64748b;
+            font-size: 0.8rem;
+        }
+        .variant-item .vactions {
+            display: flex;
+            gap: 6px;
+        }
+        .no-variants {
+            color: #64748b;
+            text-align: center;
+            padding: 30px 20px;
+        }
+        .no-variants i {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        /* ========================================
+           RESPONSIVE
+        ======================================== */
+        @media (max-width: 768px) {
+            .navbar { padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
+            .nav-logo { padding: 2px 8px; border-width: 1.5px; border-radius: 8px; gap: 6px; }
+            .nav-logo img { height: 28px; }
+            .nav-logo span { font-size: 1rem; }
+            .nav-right { gap: 10px; }
+            .nav-right .back-btn { padding: 5px 14px; font-size: 0.75rem; }
+
+            .main-content { padding: 15px 12px; margin-top: 80px; }
+            .page-title { font-size: 1.5rem; }
+
+            .card { padding: 20px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .full-width { grid-column: 1; }
+        }
+
+        @media (max-width: 480px) {
+            .variant-item {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+            .variant-item .vactions {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <a href="/" class="nav-logo">
+            <img src="https://i.ibb.co.com/KxSnyTjy/635d5463-6cd3-485e-bd05-907c07468d3a.png" alt="JubayerXtools">
+            <span>JubayerXtools</span>
+        </a>
+        <div class="nav-right">
+            <a href="/admin" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Admin</a>
+        </div>
+    </nav>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main-content">
+
+        <h1 class="page-title">Add <span>Variant</span></h1>
+        <p class="page-subtitle">Add a new variant to any product</p>
+
+        <!-- Flash Messages -->
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- ===== ADD VARIANT FORM ===== -->
+        <div class="card">
+            <div class="card-title"><i class="fas fa-plus-circle"></i> Add New Variant</div>
+            <form method="POST" action="/admin/add-variant">
+                <div class="form-grid">
+                    <!-- Product Select -->
+                    <div class="form-group full-width">
+                        <label>Select Product <span style="color:#ef4444;">*</span></label>
+                        <select name="product_id" required>
+                            <option value="">-- Select Product --</option>
+                            {% for product in products %}
+                            <option value="{{ product.id }}">
+                                {{ product.name }} ({{ product.category.name }})
+                                {% if product.has_variants %}⭐{% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <div class="hint">⭐ = Product already has variants</div>
+                    </div>
+
+                    <!-- Variant Name -->
+                    <div class="form-group">
+                        <label>Variant Name <span style="color:#ef4444;">*</span></label>
+                        <input type="text" name="name" placeholder="e.g., 1 BASIC, 2 BASIC" required>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="form-group">
+                        <label>Price (৳) <span style="color:#ef4444;">*</span></label>
+                        <input type="number" name="price" placeholder="0.00" step="0.01" required>
+                    </div>
+
+                    <!-- Validity -->
+                    <div class="form-group">
+                        <label>Validity</label>
+                        <input type="text" name="validity" placeholder="e.g., 1d, 1h, 1m">
+                        <div class="hint">1d = 1 Day | 1h = 1 Hour | 1m = 1 Minute</div>
+                    </div>
+
+                    <!-- Quantity -->
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <input type="number" name="quantity" value="1" min="1">
+                        <div class="hint">How many codes user gets (for code type products)</div>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="form-group full-width" style="margin-top:10px;">
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-plus"></i> Add Variant
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- ===== EXISTING VARIANTS ===== -->
+        <div class="card">
+            <div class="card-title"><i class="fas fa-list"></i> Existing Variants</div>
+            <div class="variant-list">
+                {% if variants %}
+                    {% for variant in variants %}
+                    <div class="variant-item">
+                        <span class="vname"><i class="fas fa-tag" style="color:var(--primary);font-size:0.7rem;"></i> {{ variant.name }}</span>
+                        <span class="vprice">৳{{ "%.2f"|format(variant.price) }}</span>
+                        <span class="vmeta">
+                            {% if variant.validity %}
+                            <i class="fas fa-clock"></i> {{ variant.validity }}
+                            {% else %}
+                            N/A
+                            {% endif %}
+                            | <i class="fas fa-hashtag"></i> {{ variant.quantity }}
+                        </span>
+                        <span class="vproduct">
+                            <i class="fas fa-box"></i> {{ variant.product.name }}
+                        </span>
+                        <span class="vactions">
+                            <span class="badge {% if variant.is_active %}badge-active{% else %}badge-inactive{% endif %}" style="font-size:0.6rem;padding:2px 10px;border-radius:50px;">
+                                {% if variant.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                            <form method="POST" action="/admin/delete-variant/{{ variant.id }}" style="display:inline;" onsubmit="return confirm('Delete this variant?')">
+                                <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-variants">
+                        <i class="fas fa-inbox"></i>
+                        <p>No variants added yet. Add your first variant above!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

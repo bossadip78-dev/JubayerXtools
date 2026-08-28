@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Terms of Service - JubayerXtools</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <style>
+        :root {
+            --primary: #24C7F2;
+            --primary-glow: rgba(36, 199, 242, 0.25);
+            --primary-border: rgba(36, 199, 242, 0.15);
+            --primary-hover: rgba(36, 199, 242, 0.08);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            padding: 12px 40px;
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--primary-border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-logo {
+            display: flex; align-items: center; gap: 10px;
+            padding: 4px 12px;
+            border: 2px solid var(--primary-border);
+            border-radius: 12px;
+            transition: 0.4s;
+            background: rgba(36,199,242,0.03);
+        }
+        .nav-logo:hover { border-color: var(--primary); box-shadow: 0 0 30px var(--primary-glow); }
+        .nav-logo img { height: 35px; width: auto; }
+        .nav-logo span {
+            font-size: 1.3rem; font-weight: 900;
+            color: var(--primary);
+            text-shadow: 0 0 20px var(--primary-glow);
+        }
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .nav-right a {
+            color: #94a3b8; font-weight: 500; font-size: 0.9rem;
+            transition: 0.3s; text-decoration: none;
+        }
+        .nav-right a:hover { color: #ffffff; }
+        .nav-right .back-btn {
+            padding: 8px 20px;
+            border: 1px solid var(--primary-border);
+            border-radius: 50px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: 0.3s;
+        }
+        .nav-right .back-btn:hover {
+            border-color: var(--primary);
+            color: #ffffff;
+            background: var(--primary-hover);
+        }
+
+        .main-content {
+            margin-top: 100px;
+            padding: 30px 40px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            color: var(--primary);
+            text-shadow: 0 0 30px var(--primary-glow);
+        }
+        .page-subtitle {
+            color: #94a3b8;
+            font-size: 1rem;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--primary-border);
+            padding-bottom: 20px;
+        }
+
+        .content-box {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--primary-border);
+            border-radius: 16px;
+            padding: 35px;
+        }
+        .content-box h2 {
+            color: var(--primary);
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+        .content-box h2:first-child {
+            margin-top: 0;
+        }
+        .content-box p {
+            color: #cbd5e1;
+            line-height: 1.8;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+        }
+        .content-box ul {
+            color: #cbd5e1;
+            line-height: 1.8;
+            padding-left: 20px;
+            margin-bottom: 12px;
+        }
+        .content-box ul li {
+            margin-bottom: 6px;
+        }
+
+        .footer-text {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.8rem;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--primary-border);
+        }
+        .footer-text span {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .navbar { padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
+            .nav-logo { padding: 2px 8px; border-width: 1.5px; border-radius: 8px; gap: 6px; }
+            .nav-logo img { height: 28px; }
+            .nav-logo span { font-size: 1rem; }
+            .nav-right { gap: 10px; }
+            .nav-right .back-btn { padding: 5px 14px; font-size: 0.75rem; }
+
+            .main-content { padding: 15px 12px; margin-top: 80px; }
+            .page-title { font-size: 1.8rem; }
+            .content-box { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <a href="/" class="nav-logo">
+            <img src="https://i.ibb.co.com/KxSnyTjy/635d5463-6cd3-485e-bd05-907c07468d3a.png" alt="JubayerXtools">
+            <span>JubayerXtools</span>
+        </a>
+        <div class="nav-right">
+            <a href="/dashboard" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </div>
+    </nav>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main-content">
+
+        <h1 class="page-title">Terms of Service</h1>
+        <p class="page-subtitle">Last updated: August 2026</p>
+
+        <div class="content-box">
+
+            <h2>1. Acceptance of Terms</h2>
+            <p>By using JubayerXtools ("we", "our", "us"), you agree to comply with and be bound by these Terms of Service. If you do not agree, please do not use our services.</p>
+
+            <h2>2. Description of Service</h2>
+            <p>JubayerXtools provides digital products including but not limited to software, panels, codes, and gaming tools. All products are delivered digitally.</p>
+
+            <h2>3. User Accounts</h2>
+            <ul>
+                <li>You must be at least 13 years old to use our services.</li>
+                <li>You are responsible for maintaining the confidentiality of your account credentials.</li>
+                <li>You are responsible for all activities that occur under your account.</li>
+                <li>We reserve the right to suspend or terminate accounts that violate our terms.</li>
+            </ul>
+
+            <h2>4. Purchases and Payments</h2>
+            <ul>
+                <li>All prices are listed in Bangladeshi Taka (৳) unless otherwise stated.</li>
+                <li>Payments are processed through our secure payment system.</li>
+                <li>All purchases are final and non-refundable unless otherwise stated.</li>
+                <li>We reserve the right to change prices at any time without notice.</li>
+            </ul>
+
+            <h2>5. Digital Products</h2>
+            <ul>
+                <li>Products are delivered digitally via the platform.</li>
+                <li>We do not guarantee compatibility with all devices or systems.</li>
+                <li>Products are provided "as is" without any warranties.</li>
+                <li>Reselling or redistributing our products is strictly prohibited.</li>
+            </ul>
+
+            <h2>6. Code and Key Delivery</h2>
+            <ul>
+                <li>For code-type products, you will receive unique codes/keys.</li>
+                <li>Codes are delivered instantly after successful payment.</li>
+                <li>We are not responsible for lost or misused codes after delivery.</li>
+                <li>Each code can only be used once.</li>
+            </ul>
+
+            <h2>7. Prohibited Activities</h2>
+            <ul>
+                <li>Attempting to hack, exploit, or bypass our security systems.</li>
+                <li>Using our products for illegal activities.</li>
+                <li>Sharing or reselling our products without permission.</li>
+                <li>Abusing our support system or staff.</li>
+            </ul>
+
+            <h2>8. Refund Policy</h2>
+            <ul>
+                <li>All digital product sales are final and non-refundable.</li>
+                <li>Refunds may be considered only if the product is defective and cannot be delivered.</li>
+                <li>Refund requests must be submitted within 7 days of purchase.</li>
+                <li>We reserve the right to approve or deny refund requests at our discretion.</li>
+            </ul>
+
+            <h2>9. Limitation of Liability</h2>
+            <p>JubayerXtools is not liable for any damages, losses, or issues arising from the use of our products or services. Our total liability shall not exceed the amount paid for the product in question.</p>
+
+            <h2>10. Changes to Terms</h2>
+            <p>We reserve the right to modify these terms at any time. Changes will be effective immediately upon posting. Your continued use of our services constitutes acceptance of the updated terms.</p>
+
+            <h2>11. Contact</h2>
+            <p>For any questions or concerns regarding these Terms of Service, please contact us at: <strong style="color:var(--primary);">support@jubayerxtools.com</strong></p>
+
+        </div>
+
+        <div class="footer-text">
+            &copy; 2026 <span>JubayerXtools</span> — All Rights Reserved. Made with ❤️ by <span>JubayerExe</span>
+        </div>
+
+    </div>
+
+</body>
+</html>

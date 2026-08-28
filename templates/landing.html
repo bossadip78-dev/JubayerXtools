@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>JubayerXtools</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <style>
+        :root {
+            --primary: #24C7F2;
+            --primary-glow: rgba(36, 199, 242, 0.25);
+            --primary-border: rgba(36, 199, 242, 0.15);
+            --primary-hover: rgba(36, 199, 242, 0.08);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        a { text-decoration: none; color: inherit; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        /* ===== LOADING SCREEN ===== */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+        #loading-screen.hide {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loader-logo {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: rgba(36, 199, 242, 0.04);
+            border: 3px solid rgba(36, 199, 242, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulseGlow 1.8s ease-in-out infinite;
+            margin-bottom: 32px;
+            position: relative;
+            padding: 16px;
+            overflow: hidden;
+        }
+        .loader-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
+            display: block;
+        }
+        .loader-logo::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top: 3px solid #24C7F2;
+            border-right: 3px solid #24C7F2;
+            animation: spin 1s linear infinite;
+        }
+        .loader-logo::after {
+            content: '';
+            position: absolute;
+            top: -22px;
+            left: -22px;
+            right: -22px;
+            bottom: -22px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(36,199,242,0.08), transparent 70%);
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 30px rgba(36,199,242,0.05), 0 0 80px rgba(36,199,242,0.02); }
+            50% { box-shadow: 0 0 70px rgba(36,199,242,0.25), 0 0 120px rgba(36,199,242,0.1); }
+        }
+
+        .loader-text {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+        .loader-text span {
+            color: #24C7F2;
+            text-shadow: 0 0 40px rgba(36, 199, 242, 0.4);
+        }
+
+        .loader-sub {
+            color: #64748b;
+            font-size: 1rem;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            animation: fadeInOut 2s ease-in-out infinite;
+        }
+
+        .loader-progress {
+            width: 300px;
+            height: 4px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            margin-top: 28px;
+            overflow: hidden;
+            position: relative;
+        }
+        .loader-progress .bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #24C7F2, #8b5cf6);
+            border-radius: 10px;
+            animation: progressBar 2.5s ease-in-out infinite;
+        }
+
+        .loader-progress-dots {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .loader-progress-dots span {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(36,199,242,0.15);
+            animation: dotProgress 1.8s ease-in-out infinite;
+        }
+        .loader-progress-dots span:nth-child(1) { animation-delay: 0s; }
+        .loader-progress-dots span:nth-child(2) { animation-delay: 0.3s; }
+        .loader-progress-dots span:nth-child(3) { animation-delay: 0.6s; }
+        .loader-progress-dots span:nth-child(4) { animation-delay: 0.9s; }
+        .loader-progress-dots span:nth-child(5) { animation-delay: 1.2s; }
+
+        @keyframes dotProgress {
+            0%, 100% { transform: scale(0.5); opacity: 0.2; background: rgba(36,199,242,0.15); }
+            50% { transform: scale(1.2); opacity: 1; background: #24C7F2; box-shadow: 0 0 20px rgba(36,199,242,0.4); }
+        }
+
+        @keyframes progressBar {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 600px) {
+            .loader-logo { width: 120px; height: 120px; padding: 12px; }
+            .loader-text { font-size: 2rem; }
+            .loader-progress { width: 220px; }
+            .loader-sub { font-size: 0.8rem; letter-spacing: 4px; }
+        }
+        @media (max-width: 400px) {
+            .loader-logo { width: 90px; height: 90px; padding: 8px; }
+            .loader-text { font-size: 1.5rem; }
+            .loader-progress { width: 180px; }
+            .loader-sub { font-size: 0.65rem; letter-spacing: 3px; }
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 14px 40px;
+            background: rgba(10, 10, 10, 0.92);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--primary-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.3s;
+        }
+        .navbar.scrolled {
+            background: rgba(10, 10, 10, 0.98);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 4px 14px;
+            border: 2px solid var(--primary-border);
+            border-radius: 12px;
+            transition: 0.4s;
+            background: rgba(36, 199, 242, 0.03);
+        }
+        .nav-logo:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 30px var(--primary-glow);
+        }
+        .nav-logo img {
+            height: 35px;
+            width: auto;
+            border-radius: 8px;
+        }
+        .nav-logo span {
+            font-size: 1.2rem;
+            font-weight: 900;
+            color: var(--primary);
+            text-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .nav-links a {
+            color: #94a3b8;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: 0.3s;
+            position: relative;
+        }
+        .nav-links a:hover {
+            color: #ffffff;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: 0.3s;
+        }
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-btn {
+            padding: 10px 28px;
+            border: 1.5px solid var(--primary);
+            border-radius: 50px;
+            background: transparent;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+        .nav-btn:hover {
+            background: var(--primary);
+            color: #0a0a0a;
+            box-shadow: 0 0 30px var(--primary-glow);
+            transform: translateY(-2px);
+        }
+        .nav-btn-outline {
+            border-color: var(--primary-border);
+        }
+        .nav-btn-outline:hover {
+            background: var(--primary-hover);
+            color: #ffffff;
+            box-shadow: none;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 8px;
+        }
+        .menu-toggle:hover {
+            color: var(--primary);
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            padding: 140px 40px 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at center, rgba(36, 199, 242, 0.05) 0%, transparent 60%);
+            animation: heroGlow 12s ease-in-out infinite alternate;
+        }
+        @keyframes heroGlow {
+            0% { transform: translate(0,0) scale(1); }
+            100% { transform: translate(5%,5%) scale(1.1); }
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            animation: orbFloat 8s ease-in-out infinite alternate;
+        }
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: rgba(36, 199, 242, 0.08);
+            top: -100px;
+            right: -100px;
+            animation-delay: 0s;
+        }
+        .orb-2 {
+            width: 350px;
+            height: 350px;
+            background: rgba(139, 92, 246, 0.06);
+            bottom: -100px;
+            left: -100px;
+            animation-delay: 4s;
+        }
+        .orb-3 {
+            width: 250px;
+            height: 250px;
+            background: rgba(36, 199, 242, 0.05);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: 2s;
+            animation-duration: 12s;
+        }
+        @keyframes orbFloat {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, -30px) scale(1.1); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 820px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            border-radius: 50px;
+            background: var(--primary-hover);
+            border: 1px solid var(--primary-border);
+            color: var(--primary);
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            animation: fadeInDown 0.8s ease;
+        }
+        .hero-badge i {
+            font-size: 0.7rem;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 1.08;
+            margin-bottom: 18px;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+        .hero h1 span {
+            color: var(--primary);
+            text-shadow: 0 0 40px var(--primary-glow);
+            position: relative;
+        }
+        .hero h1 span::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: var(--primary-glow);
+            border-radius: 10px;
+            filter: blur(12px);
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            color: #94a3b8;
+            max-width: 550px;
+            margin: 0 auto 32px;
+            line-height: 1.8;
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease 0.6s both;
+        }
+        .hero-btn {
+            padding: 16px 38px;
+            border: 1.5px solid var(--primary);
+            border-radius: 50px;
+            background: transparent;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Inter', sans-serif;
+        }
+        .hero-btn-primary {
+            background: var(--primary);
+            color: #0a0a0a;
+        }
+        .hero-btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 60px var(--primary-glow);
+        }
+        .hero-btn-secondary:hover {
+            background: var(--primary-hover);
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 50px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            animation: fadeInUp 0.8s ease 0.8s both;
+        }
+        .hero-stat h3 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-shadow: 0 0 30px var(--primary-glow);
+        }
+        .hero-stat p {
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-top: 2px;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ========================================
+           HOT PRODUCTS
+        ======================================== */
+        .hot-products {
+            padding: 60px 40px 80px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .hot-products-title {
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+        .hot-products-title span {
+            color: var(--primary);
+            text-shadow: 0 0 30px var(--primary-glow);
+        }
+        .hot-products-sub {
+            text-align: center;
+            color: #94a3b8;
+            margin-bottom: 40px;
+            font-size: 1rem;
+        }
+
+        .hot-products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .hot-product-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1.5px solid var(--primary-border);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            transition: 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+        .hot-product-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-6px);
+            box-shadow: 0 0 50px var(--primary-glow);
+        }
+        .hot-product-card .hot-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(239, 68, 68, 0.12);
+            color: #f87171;
+            padding: 4px 14px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        .hot-product-card .icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: var(--primary-hover);
+            border: 1px solid var(--primary-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+            font-size: 1.8rem;
+            color: var(--primary);
+            transition: 0.3s;
+        }
+        .hot-product-card:hover .icon {
+            background: var(--primary);
+            color: #0a0a0a;
+            box-shadow: 0 0 30px var(--primary-glow);
+        }
+        .hot-product-card .icon img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .hot-product-card h4 {
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin-bottom: 4px;
+        }
+        .hot-product-card .price {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 6px 0;
+            text-shadow: 0 0 20px var(--primary-glow);
+        }
+        .hot-product-card .desc {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        .hot-product-card .tag {
+            display: inline-block;
+            padding: 3px 14px;
+            border-radius: 50px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            background: rgba(36,199,242,0.08);
+            color: var(--primary);
+            border: 1px solid var(--primary-border);
+            margin-top: 4px;
+        }
+        .hot-product-card .btn-buy-hot {
+            margin-top: 14px;
+            padding: 10px 30px;
+            border: 1.5px solid var(--primary);
+            border-radius: 50px;
+            background: transparent;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .hot-product-card .btn-buy-hot:hover {
+            background: var(--primary);
+            color: #0a0a0a;
+            box-shadow: 0 0 30px var(--primary-glow);
+            transform: translateY(-2px);
+        }
+
+        /* ========================================
+           FOOTER
+        ======================================== */
+        .footer {
+            text-align: center;
+            padding: 30px 20px 20px;
+            border-top: 1px solid var(--primary-border);
+            margin-top: 20px;
+        }
+        .footer .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .footer .social-links a {
+            color: #94a3b8;
+            font-size: 1.3rem;
+            transition: 0.3s;
+        }
+        .footer .social-links a:hover {
+            color: var(--primary);
+            transform: translateY(-3px);
+        }
+        .footer .footer-text {
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+        }
+        .footer .footer-text span {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .footer .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .footer .footer-links a {
+            color: #64748b;
+            font-size: 0.8rem;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .footer .footer-links a:hover {
+            color: var(--primary);
+        }
+        .footer .footer-links .separator {
+            color: #2a2a2a;
+        }
+        .footer .made-by {
+            color: #64748b;
+            font-size: 0.75rem;
+            margin-top: 10px;
+        }
+        .footer .made-by span {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* ========================================
+           RESPONSIVE
+        ======================================== */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 3.2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 12px 20px;
+            }
+            .nav-links {
+                display: none;
+                width: 100%;
+                flex-direction: column;
+                gap: 14px;
+                padding: 20px 0 10px;
+                border-top: 1px solid var(--primary-border);
+                margin-top: 12px;
+            }
+            .nav-links.open {
+                display: flex;
+            }
+            .nav-links a {
+                width: 100%;
+                text-align: center;
+                padding: 8px 0;
+            }
+            .nav-links .nav-btn {
+                width: 100%;
+                text-align: center;
+                justify-content: center;
+            }
+            .menu-toggle {
+                display: block;
+            }
+
+            .hero {
+                padding: 120px 20px 60px;
+                min-height: auto;
+            }
+            .hero h1 {
+                font-size: 2.4rem;
+            }
+            .hero p {
+                font-size: 1rem;
+            }
+            .hero-stats {
+                gap: 30px;
+                flex-wrap: wrap;
+            }
+            .hero-stat h3 {
+                font-size: 1.5rem;
+            }
+
+            .hot-products {
+                padding: 40px 20px 60px;
+            }
+            .hot-products-title {
+                font-size: 1.8rem;
+            }
+            .hot-products-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .orb-1, .orb-2, .orb-3 {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            .hero-btn {
+                padding: 12px 24px;
+                font-size: 0.85rem;
+                width: 100%;
+                justify-content: center;
+            }
+            .hero-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+            .hero-stats {
+                flex-direction: column;
+                gap: 16px;
+                align-items: center;
+            }
+
+            .hot-products-grid {
+                grid-template-columns: 1fr;
+            }
+            .hot-products-title {
+                font-size: 1.4rem;
+            }
+
+            .footer .footer-links {
+                flex-direction: column;
+                gap: 6px;
+            }
+            .footer .footer-links .separator {
+                display: none;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .nav-links {
+                display: flex !important;
+            }
+            .menu-toggle {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== LOADING SCREEN ===== -->
+    <div id="loading-screen">
+        <div class="loader-logo">
+            <img src="https://i.ibb.co.com/KxSnyTjy/635d5463-6cd3-485e-bd05-907c07468d3a.png" alt="JubayerXtools Logo">
+        </div>
+        <div class="loader-text"><span>Jubayer</span>Xtools</div>
+        <div class="loader-sub">Loading...</div>
+        <div class="loader-progress">
+            <div class="bar"></div>
+        </div>
+        <div class="loader-progress-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar" id="navbar">
+        <a href="/" class="nav-logo">
+            <img src="https://i.ibb.co.com/KxSnyTjy/635d5463-6cd3-485e-bd05-907c07468d3a.png" alt="JubayerXtools">
+            <span>JubayerXtools</span>
+        </a>
+
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="nav-links" id="navLinks">
+            <a href="#home">Home</a>
+            <a href="#hot-products">Products</a>
+            <a href="#features">Features</a>
+            {% if current_user.is_authenticated %}
+            <a href="/dashboard" class="nav-btn">Dashboard</a>
+            <a href="/logout" class="nav-btn nav-btn-outline">Logout</a>
+            {% else %}
+            <a href="/login" class="nav-btn">Login</a>
+            <a href="/login#register" class="nav-btn">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero" id="home">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-shield-alt"></i> Verified & Trusted
+            </div>
+            <h1>Premium <span>Products</span><br>For Your Profile</h1>
+            <p>Get instant access to premium tools and products. 100% safe, verified, and lightning-fast delivery.</p>
+
+            <div class="hero-buttons">
+                {% if current_user.is_authenticated %}
+                <a href="/dashboard" class="hero-btn hero-btn-primary">
+                    <i class="fas fa-th-large"></i> Dashboard
+                </a>
+                {% else %}
+                <a href="/login" class="hero-btn hero-btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Get Started
+                </a>
+                {% endif %}
+                <a href="#hot-products" class="hero-btn hero-btn-secondary">
+                    <i class="fas fa-fire"></i> View Products
+                </a>
+            </div>
+
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <h3>1.2K+</h3>
+                    <p>Active Orders</p>
+                </div>
+                <div class="hero-stat">
+                    <h3>100%</h3>
+                    <p>Safe & Secure</p>
+                </div>
+                <div class="hero-stat">
+                    <h3>4.9★</h3>
+                    <p>User Rating</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================
+       HOT PRODUCTS
+    ======================================== -->
+    <section class="hot-products" id="hot-products">
+        <h2 class="hot-products-title">🔥 Hot <span>Products</span></h2>
+        <p class="hot-products-sub">Most popular products right now</p>
+
+        <div class="hot-products-grid">
+
+            <!-- FF Guild Glory Credit -->
+            <div class="hot-product-card">
+                <span class="hot-badge"><i class="fas fa-fire"></i> Hot</span>
+                <div class="icon"><i class="fas fa-trophy"></i></div>
+                <h4>FF Guild Glory Credit</h4>
+                <div class="price">৳130.00</div>
+                <div class="desc">Free Fire Guild Level Up Bot. Guild Glory Credits</div>
+                <span class="tag"><i class="fas fa-check-circle"></i> Verified</span>
+                <div>
+                    <button class="btn-buy-hot" onclick="window.location.href='/login'">
+                        <i class="fas fa-shopping-cart"></i> Buy Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- FF Non Root Panel -->
+            <div class="hot-product-card">
+                <div class="icon"><i class="fas fa-mobile-screen-button"></i></div>
+                <h4>FF Non Root Panel</h4>
+                <div class="price">৳80.00</div>
+                <div class="desc">Premium Android non-root panel for Free Fire</div>
+                <span class="tag"><i class="fas fa-check-circle"></i> Non Root</span>
+                <div>
+                    <button class="btn-buy-hot" onclick="window.location.href='/login'">
+                        <i class="fas fa-shopping-cart"></i> Buy Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- FF Root Panel -->
+            <div class="hot-product-card">
+                <div class="icon"><i class="fas fa-terminal"></i></div>
+                <h4>FF Root Panel</h4>
+                <div class="price">৳120.00</div>
+                <div class="desc">Root panel cheat tool for Free Fire</div>
+                <span class="tag"><i class="fas fa-check-circle"></i> Root</span>
+                <div>
+                    <button class="btn-buy-hot" onclick="window.location.href='/login'">
+                        <i class="fas fa-shopping-cart"></i> Buy Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- BalaMod Key -->
+            <div class="hot-product-card">
+                <div class="icon"><i class="fas fa-key"></i></div>
+                <h4>BalaMod Key</h4>
+                <div class="price">৳80.00</div>
+                <div class="desc">Premium Android mod panel activation key</div>
+                <span class="tag"><i class="fas fa-check-circle"></i> Key</span>
+                <div>
+                    <button class="btn-buy-hot" onclick="window.location.href='/login'">
+                        <i class="fas fa-shopping-cart"></i> Buy Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- Drip Client Key -->
+            <div class="hot-product-card">
+                <div class="icon"><i class="fas fa-user-astronaut"></i></div>
+                <h4>Drip Client Key</h4>
+                <div class="price">৳100.00</div>
+                <div class="desc">Premium Drip client activation key</div>
+                <span class="tag"><i class="fas fa-check-circle"></i> Key</span>
+                <div>
+                    <button class="btn-buy-hot" onclick="window.location.href='/login'">
+                        <i class="fas fa-shopping-cart"></i> Buy Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- Telegram Like Bot Source -->
+            <div class="hot-product-card">
+                <div class="icon"><i class="fab fa-telegram"></i></div>
+                <h4>Telegram Like Bot Source</h4>
+                <div class="price">৳150.00</div>
+                <div class="desc">Complete Telegram like bot source code</div>
+                <span class="tag"><i class="fas fa-check-circle"></i> Source Code</span>
+                <div>
+                    <button class="btn-buy-hot" onclick="window.location.href='/login'">
+                        <i class="fas fa-shopping-cart"></i> Buy Now
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ===== FEATURES ===== -->
+    <section class="hot-products" id="features">
+        <h2 class="hot-products-title">Why Choose <span>JubayerXtools</span></h2>
+        <p class="hot-products-sub">We provide the best digital products with premium quality</p>
+
+        <div class="hot-products-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
+
+            <div class="hot-product-card">
+                <div class="icon"><i class="fas fa-bolt"></i></div>
+                <h4>Instant Delivery</h4>
+                <div class="desc">Get your products instantly after successful payment. No waiting time.</div>
+            </div>
+
+            <div class="hot-product-card">
+                <div class="icon"><i class="fas fa-shield-halved"></i></div>
+                <h4>100% Secure</h4>
+                <div class="desc">All transactions are secure and encrypted. Your data is safe with us.</div>
+            </div>
+
+            <div class="hot-product-card">
+                <div class="icon"><i class="fas fa-headset"></i></div>
+                <h4>24/7 Support</h4>
+                <div class="desc">Our support team is always ready to help you with any issues.</div>
+            </div>
+
+            <div class="hot-product-card">
+                <div class="icon"><i class="fas fa-rotate-left"></i></div>
+                <h4>Money Back</h4>
+                <div class="desc">Full refund if product is defective or not delivered as promised.</div>
+            </div>
+
+            <div class="hot-product-card">
+                <div class="icon"><i class="fas fa-layer-group"></i></div>
+                <h4>Multiple Variants</h4>
+                <div class="desc">Choose from different variants based on your needs and budget.</div>
+            </div>
+
+            <div class="hot-product-card">
+                <div class="icon"><i class="fas fa-check-circle"></i></div>
+                <h4>Verified Products</h4>
+                <div class="desc">All products are verified and tested before being listed on our platform.</div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="social-links">
+            <a href="#" target="_blank" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
+            <a href="#" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+            <a href="#" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+            <a href="#" target="_blank" title="Facebook"><i class="fab fa-facebook"></i></a>
+            <a href="#" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank" title="Twitter"><i class="fab fa-twitter"></i></a>
+        </div>
+        <p class="footer-text">
+            &copy; 2026 <span>JubayerXtools</span> — All Rights Reserved.
+        </p>
+        <div class="footer-links">
+            <a href="/terms">Terms of Service</a>
+            <span class="separator">|</span>
+            <a href="/privacy">Privacy Policy</a>
+            <span class="separator">|</span>
+            <a href="/support">Support</a>
+        </div>
+        <p class="made-by">
+            Made with <i class="fas fa-heart" style="color:#ef4444;font-size:0.7rem;"></i> by <span>JubayerExe</span>
+        </p>
+    </footer>
+
+    <!-- ========================================
+       JAVASCRIPT
+    ======================================== -->
+    <script>
+        // ========================================
+        // LOADING SCREEN (2 বার ভাইব্রেট হবে)
+        // ========================================
+        window.addEventListener('load', function() {
+            // প্রথম বার (2.5 সেকেন্ড)
+            setTimeout(function() {
+                // প্রোগ্রেস বার রিসেট করে আবার রান করানো
+                const bar = document.querySelector('.loader-progress .bar');
+                bar.style.animation = 'none';
+                // ফোর্স রিফ্লো (ব্রাউজারকে রি-রেন্ডার করতে বাধ্য করা)
+                void bar.offsetHeight;
+                bar.style.animation = 'progressBar 2.5s ease-in-out infinite';
+
+                // দ্বিতীয় বার (2.5 সেকেন্ড)
+                setTimeout(function() {
+                    document.getElementById('loading-screen').classList.add('hide');
+                }, 2500);
+            }, 2500);
+        });
+
+        // ========================================
+        // MOBILE MENU
+        // ========================================
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        menuToggle.addEventListener('click', function() {
+            navLinks.classList.toggle('open');
+            const icon = this.querySelector('i');
+            if (navLinks.classList.contains('open')) {
+                icon.className = 'fas fa-times';
+            } else {
+                icon.className = 'fas fa-bars';
+            }
+        });
+
+        // ========================================
+        // NAVBAR SCROLL EFFECT
+        // ========================================
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // ========================================
+        // SMOOTH SCROLL FOR ANCHOR LINKS
+        // ========================================
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href === '#') return;
+                e.preventDefault();
+                const target = document.querySelector(href);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    navLinks.classList.remove('open');
+                    const icon = menuToggle.querySelector('i');
+                    if (icon) icon.className = 'fas fa-bars';
+                }
+            });
+        });
+
+        // ========================================
+        // HOT PRODUCT BUTTONS
+        // ========================================
+        document.querySelectorAll('.btn-buy-hot').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const href = this.getAttribute('onclick');
+                if (href) {
+                    eval(href);
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Login - JubayerXtools</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <style>
+        :root {
+            --primary: #24C7F2;
+            --primary-glow: rgba(36, 199, 242, 0.25);
+            --primary-border: rgba(36, 199, 242, 0.15);
+            --primary-hover: rgba(36, 199, 242, 0.08);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .login-container {
+            background: #141b2d;
+            border: 1px solid var(--primary-border);
+            border-radius: 24px;
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            animation: slideUp 0.6s ease;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .login-logo img {
+            height: 70px;
+            width: auto;
+            display: inline-block;
+            border: 2.5px solid var(--primary-border);
+            border-radius: 16px;
+            padding: 6px 12px;
+            background: rgba(36, 199, 242, 0.03);
+            transition: 0.3s;
+        }
+        .login-logo img:hover {
+            border-color: var(--primary);
+        }
+
+        .login-title {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #24C7F2, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-top: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .login-subtitle {
+            text-align: center;
+            color: #94a3b8;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        .tabs {
+            display: flex; gap: 10px; margin-bottom: 30px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px; padding: 5px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .tab-btn {
+            flex: 1; padding: 12px; border: none; border-radius: 8px;
+            background: transparent; color: #94a3b8;
+            font-weight: 600; cursor: pointer; transition: 0.3s;
+            font-size: 1rem; font-family: 'Inter', sans-serif;
+        }
+        .tab-btn.active {
+            background: var(--primary); color: #0a0a0a;
+            box-shadow: 0 5px 20px var(--primary-glow);
+        }
+        .tab-btn:hover:not(.active) { color: #ffffff; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label {
+            display: block; margin-bottom: 6px;
+            color: #cbd5e1; font-weight: 500; font-size: 0.9rem;
+        }
+        .form-group input {
+            width: 100%; padding: 12px 15px;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            font-size: 1rem; transition: 0.3s;
+            background: rgba(255,255,255,0.04);
+            color: #ffffff;
+        }
+        .form-group input:focus {
+            border-color: var(--primary);
+            outline: none;
+            background: rgba(255,255,255,0.06);
+            box-shadow: 0 0 0 4px var(--primary-glow);
+        }
+        .form-group input::placeholder { color: #64748b; }
+
+        /* ===== PHONE NUMBER VALIDATION STYLES ===== */
+        .form-group input.invalid {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 4px rgba(239,68,68,0.15);
+        }
+        .form-group .error-text {
+            color: #f87171;
+            font-size: 0.75rem;
+            margin-top: 4px;
+            display: none;
+        }
+        .form-group .error-text.show {
+            display: block;
+        }
+        .form-group .hint-text {
+            color: #64748b;
+            font-size: 0.75rem;
+            margin-top: 4px;
+        }
+
+        .login-btn {
+            width: 100%; padding: 14px; border: none; border-radius: 10px;
+            background: var(--primary); color: #0a0a0a;
+            font-size: 1.1rem; font-weight: 600;
+            cursor: pointer; transition: 0.3s; margin-top: 10px;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            min-height: 54px;
+        }
+        .login-btn:hover:not(.processing) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px var(--primary-glow);
+        }
+        .login-btn .btn-text { display: inline-flex; align-items: center; gap: 8px; }
+        .login-btn .btn-text i { font-size: 1rem; }
+
+        .login-btn.processing {
+            pointer-events: none;
+            opacity: 0.85;
+        }
+        .login-btn.processing .btn-text {
+            visibility: hidden;
+        }
+        .login-btn.processing .spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #0a0a0a;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .login-btn.processing .spinner i {
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .password-hint {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .flash-messages { margin-bottom: 20px; }
+        .flash-message {
+            padding: 12px 15px; border-radius: 10px;
+            margin-bottom: 10px; font-weight: 500;
+        }
+        .flash-message.error {
+            background: rgba(239,68,68,0.12);
+            color: #f87171;
+            border-left: 3px solid #ef4444;
+        }
+        .flash-message.success {
+            background: rgba(34,197,94,0.12);
+            color: #4ade80;
+            border-left: 3px solid #22c55e;
+        }
+
+        .divider {
+            text-align: center; margin: 25px 0;
+            color: #64748b; position: relative;
+        }
+        .divider::before {
+            content: ''; position: absolute; top: 50%; left: 0;
+            width: 100%; height: 1px;
+            background: rgba(255,255,255,0.06);
+        }
+        .divider span { background: #141b2d; padding: 0 15px; position: relative; z-index: 1; }
+
+        .google-btn {
+            width: 100%; padding: 12px;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.04);
+            font-size: 1rem; font-weight: 500;
+            cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center;
+            gap: 10px; color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            text-decoration: none;
+            min-height: 50px;
+            position: relative;
+        }
+        .google-btn:hover:not(.processing) {
+            border-color: var(--primary);
+            background: var(--primary-hover);
+        }
+        .google-btn i { color: #ea4335; font-size: 1.2rem; }
+
+        .google-btn.processing {
+            pointer-events: none;
+            opacity: 0.85;
+        }
+        .google-btn.processing .btn-text {
+            visibility: hidden;
+        }
+        .google-btn.processing .spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .google-btn.processing .spinner i {
+            animation: spin 0.7s linear infinite;
+        }
+
+        .switch-tab-text {
+            text-align: center; margin-top: 15px;
+            color: #94a3b8; font-size: 0.95rem;
+        }
+        .switch-tab-text a {
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .switch-tab-text a:hover { text-decoration: underline; }
+
+        .processing-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10,10,10,0.92);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+        .processing-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+        .processing-overlay .spinner {
+            width: 50px; height: 50px;
+            border: 4px solid rgba(36,199,242,0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 20px;
+        }
+        .processing-overlay h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        .processing-overlay p {
+            color: #94a3b8;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 480px) {
+            .login-container { padding: 30px 20px; }
+            .login-logo img { height: 50px; }
+            .login-title { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="processing-overlay" id="processingOverlay">
+        <div class="spinner"></div>
+        <h2>Authenticating...</h2>
+        <p>Please wait while we verify your Google account</p>
+    </div>
+
+    <div class="login-container">
+
+        <div class="login-logo">
+            <img src="https://i.ibb.co.com/KxSnyTjy/635d5463-6cd3-485e-bd05-907c07468d3a.png" alt="JubayerXtools">
+        </div>
+        <h1 class="login-title">JubayerXtools</h1>
+        <p class="login-subtitle">Welcome to JubayerXtools</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="tabs">
+            <button class="tab-btn {% if active_tab == 'login' %}active{% endif %}" onclick="switchTab('login')">Login</button>
+            <button class="tab-btn {% if active_tab == 'register' %}active{% endif %}" onclick="switchTab('register')">Register</button>
+        </div>
+
+        <!-- ===== LOGIN TAB ===== -->
+        <div id="tab-login" class="tab-content {% if active_tab == 'login' %}active{% endif %}">
+            <form method="POST" action="/login" id="loginForm">
+                <input type="hidden" name="action" value="login">
+                <div class="form-group">
+                    <label for="login_username">Username</label>
+                    <input type="text" id="login_username" name="username" placeholder="Enter your username" required>
+                </div>
+                <div class="form-group">
+                    <label for="login_password">Password</label>
+                    <input type="password" id="login_password" name="password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <span class="btn-text"><i class="fas fa-sign-in-alt"></i> Login</span>
+                </button>
+            </form>
+
+            <div class="divider"><span>or continue with</span></div>
+
+            <a href="#" class="google-btn" id="googleBtn">
+                <span class="btn-text"><i class="fab fa-google"></i> Sign in with Google</span>
+            </a>
+
+            <div class="switch-tab-text">
+                Don't have an account? <a onclick="switchTab('register')">Register Now</a>
+            </div>
+        </div>
+
+        <!-- ===== REGISTER TAB ===== -->
+        <div id="tab-register" class="tab-content {% if active_tab == 'register' %}active{% endif %}">
+            <form method="POST" action="/login" id="registerForm">
+                <input type="hidden" name="action" value="register">
+                <div class="form-group">
+                    <label for="register_username">Username</label>
+                    <input type="text" id="register_username" name="username" placeholder="Choose a username" required>
+                </div>
+                <div class="form-group">
+                    <label for="register_email">Email Address</label>
+                    <input type="email" id="register_email" name="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="register_phone">Phone Number</label>
+                    <input type="text" id="register_phone" name="phone" placeholder="Enter your phone number" required>
+                    <div class="hint-text">Must be at least 11 digits (numbers only)</div>
+                    <div class="error-text" id="phoneError">Please enter a valid phone number (minimum 11 digits)</div>
+                </div>
+                <div class="form-group">
+                    <label for="register_password">Password</label>
+                    <input type="password" id="register_password" name="password" placeholder="Create a password" required>
+                    <div class="password-hint">Password must be at least 6 characters</div>
+                </div>
+                <div class="form-group">
+                    <label for="register_confirm">Confirm Password</label>
+                    <input type="password" id="register_confirm" name="confirm_password" placeholder="Confirm your password" required>
+                </div>
+                <button type="submit" class="login-btn" id="registerBtn">
+                    <span class="btn-text"><i class="fas fa-user-plus"></i> Create Account</span>
+                </button>
+            </form>
+
+            <div class="divider"><span>or continue with</span></div>
+
+            <a href="#" class="google-btn" id="googleRegisterBtn">
+                <span class="btn-text"><i class="fab fa-google"></i> Sign up with Google</span>
+            </a>
+
+            <div class="switch-tab-text">
+                Already have an account? <a onclick="switchTab('login')">Login Here</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== TAB SWITCHING =====
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            const buttons = document.querySelectorAll('.tab-btn');
+            if (tab === 'login') buttons[0].classList.add('active');
+            else buttons[1].classList.add('active');
+
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            if (tab === 'login') document.getElementById('tab-login').classList.add('active');
+            else document.getElementById('tab-register').classList.add('active');
+        }
+
+        // ===== PHONE NUMBER VALIDATION =====
+        function validatePhoneNumber(phone) {
+            // Remove any non-digit characters
+            const digits = phone.replace(/\D/g, '');
+            return digits.length >= 11;
+        }
+
+        function formatPhoneNumber(input) {
+            // Remove non-digit characters
+            input.value = input.value.replace(/\D/g, '');
+        }
+
+        // ===== REGISTER FORM VALIDATION =====
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            const phoneInput = document.getElementById('register_phone');
+            const phoneError = document.getElementById('phoneError');
+            const phone = phoneInput.value.trim();
+
+            // Remove non-digit characters
+            const digits = phone.replace(/\D/g, '');
+
+            if (!validatePhoneNumber(phone)) {
+                e.preventDefault();
+                phoneInput.classList.add('invalid');
+                phoneError.classList.add('show');
+                phoneInput.focus();
+                return false;
+            } else {
+                phoneInput.classList.remove('invalid');
+                phoneError.classList.remove('show');
+                // Set cleaned phone number
+                phoneInput.value = digits;
+            }
+
+            const btn = document.getElementById('registerBtn');
+            btn.classList.add('processing');
+            btn.innerHTML = `
+                <span class="spinner">
+                    <i class="fas fa-spinner"></i> Creating account...
+                </span>
+                <span class="btn-text"><i class="fas fa-user-plus"></i> Create Account</span>
+            `;
+        });
+
+        // ===== REAL-TIME PHONE VALIDATION =====
+        document.getElementById('register_phone').addEventListener('input', function() {
+            formatPhoneNumber(this);
+            const phoneError = document.getElementById('phoneError');
+            if (validatePhoneNumber(this.value)) {
+                this.classList.remove('invalid');
+                phoneError.classList.remove('show');
+            } else {
+                this.classList.add('invalid');
+                phoneError.classList.add('show');
+            }
+        });
+
+        document.getElementById('register_phone').addEventListener('blur', function() {
+            formatPhoneNumber(this);
+            const phoneError = document.getElementById('phoneError');
+            if (this.value && !validatePhoneNumber(this.value)) {
+                this.classList.add('invalid');
+                phoneError.classList.add('show');
+            } else {
+                this.classList.remove('invalid');
+                phoneError.classList.remove('show');
+            }
+        });
+
+        // ===== LOGIN BUTTON PROCESSING =====
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const btn = document.getElementById('loginBtn');
+            btn.classList.add('processing');
+            btn.innerHTML = `
+                <span class="spinner">
+                    <i class="fas fa-spinner"></i> Logging in...
+                </span>
+                <span class="btn-text"><i class="fas fa-sign-in-alt"></i> Login</span>
+            `;
+        });
+
+        // ===== GOOGLE LOGIN =====
+        document.getElementById('googleBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            const btn = this;
+            btn.classList.add('processing');
+            btn.innerHTML = `
+                <span class="spinner">
+                    <i class="fas fa-spinner"></i> Redirecting...
+                </span>
+                <span class="btn-text"><i class="fab fa-google"></i> Sign in with Google</span>
+            `;
+            setTimeout(function() {
+                window.location.href = '/google-login';
+            }, 3000);
+        });
+
+        document.getElementById('googleRegisterBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            const btn = this;
+            btn.classList.add('processing');
+            btn.innerHTML = `
+                <span class="spinner">
+                    <i class="fas fa-spinner"></i> Redirecting...
+                </span>
+                <span class="btn-text"><i class="fab fa-google"></i> Sign up with Google</span>
+            `;
+            setTimeout(function() {
+                window.location.href = '/google-login';
+            }, 3000);
+        });
+
+        // ===== GOOGLE CALLBACK PROCESSING =====
+        window.addEventListener('load', function() {
+            const flashMessages = document.querySelectorAll('.flash-message.success');
+            let hasGoogleSuccess = false;
+            flashMessages.forEach(msg => {
+                if (msg.textContent.includes('Google login successful')) {
+                    hasGoogleSuccess = true;
+                }
+            });
+
+            if (hasGoogleSuccess) {
+                const overlay = document.getElementById('processingOverlay');
+                overlay.classList.add('active');
+                setTimeout(function() {
+                    window.location.href = '/dashboard';
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>

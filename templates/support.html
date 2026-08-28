@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Support - JubayerXtools</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <style>
+        :root {
+            --primary: #24C7F2;
+            --primary-glow: rgba(36, 199, 242, 0.25);
+            --primary-border: rgba(36, 199, 242, 0.15);
+            --primary-hover: rgba(36, 199, 242, 0.08);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            padding: 12px 40px;
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--primary-border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-logo {
+            display: flex; align-items: center; gap: 10px;
+            padding: 4px 12px;
+            border: 2px solid var(--primary-border);
+            border-radius: 12px;
+            transition: 0.4s;
+            background: rgba(36,199,242,0.03);
+        }
+        .nav-logo:hover { border-color: var(--primary); box-shadow: 0 0 30px var(--primary-glow); }
+        .nav-logo img { height: 35px; width: auto; }
+        .nav-logo span {
+            font-size: 1.3rem; font-weight: 900;
+            color: var(--primary);
+            text-shadow: 0 0 20px var(--primary-glow);
+        }
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .nav-right a {
+            color: #94a3b8; font-weight: 500; font-size: 0.9rem;
+            transition: 0.3s; text-decoration: none;
+        }
+        .nav-right a:hover { color: #ffffff; }
+        .nav-right .back-btn {
+            padding: 8px 20px;
+            border: 1px solid var(--primary-border);
+            border-radius: 50px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: 0.3s;
+        }
+        .nav-right .back-btn:hover {
+            border-color: var(--primary);
+            color: #ffffff;
+            background: var(--primary-hover);
+        }
+
+        .main-content {
+            margin-top: 100px;
+            padding: 30px 40px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            color: var(--primary);
+            text-shadow: 0 0 30px var(--primary-glow);
+        }
+        .page-subtitle {
+            color: #94a3b8;
+            font-size: 1rem;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--primary-border);
+            padding-bottom: 20px;
+        }
+
+        .content-box {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--primary-border);
+            border-radius: 16px;
+            padding: 35px;
+        }
+        .content-box h2 {
+            color: var(--primary);
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+        .content-box h2:first-child {
+            margin-top: 0;
+        }
+        .content-box p {
+            color: #cbd5e1;
+            line-height: 1.8;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+        }
+        .content-box ul {
+            color: #cbd5e1;
+            line-height: 1.8;
+            padding-left: 20px;
+            margin-bottom: 12px;
+        }
+        .content-box ul li {
+            margin-bottom: 6px;
+        }
+
+        .support-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--primary-border);
+            border-radius: 12px;
+            padding: 20px 25px;
+            margin-bottom: 15px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .support-card:hover {
+            border-color: var(--primary);
+            background: var(--primary-hover);
+        }
+        .support-card .icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            border: 1px solid var(--primary-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+        .support-card .info {
+            flex: 1;
+        }
+        .support-card .info h4 {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #ffffff;
+        }
+        .support-card .info p {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-top: 2px;
+        }
+        .support-card .action-btn {
+            padding: 8px 24px;
+            border: 1.5px solid var(--primary);
+            border-radius: 50px;
+            background: transparent;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+        }
+        .support-card .action-btn:hover {
+            background: var(--primary);
+            color: #0a0a0a;
+            box-shadow: 0 0 30px var(--primary-glow);
+        }
+
+        .faq-item {
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 15px 0;
+            cursor: pointer;
+        }
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+        .faq-item .question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+        .faq-item .question:hover {
+            color: var(--primary);
+        }
+        .faq-item .question i {
+            color: var(--primary);
+            transition: 0.3s;
+        }
+        .faq-item .question i.rotate {
+            transform: rotate(180deg);
+        }
+        .faq-item .answer {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            margin-top: 10px;
+            display: none;
+        }
+        .faq-item .answer.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .footer-text {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.8rem;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--primary-border);
+        }
+        .footer-text span {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .navbar { padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
+            .nav-logo { padding: 2px 8px; border-width: 1.5px; border-radius: 8px; gap: 6px; }
+            .nav-logo img { height: 28px; }
+            .nav-logo span { font-size: 1rem; }
+            .nav-right { gap: 10px; }
+            .nav-right .back-btn { padding: 5px 14px; font-size: 0.75rem; }
+
+            .main-content { padding: 15px 12px; margin-top: 80px; }
+            .page-title { font-size: 1.8rem; }
+            .content-box { padding: 20px; }
+            .support-card { flex-direction: column; text-align: center; }
+            .support-card .action-btn { width: 100%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <a href="/" class="nav-logo">
+            <img src="https://i.ibb.co.com/KxSnyTjy/635d5463-6cd3-485e-bd05-907c07468d3a.png" alt="JubayerXtools">
+            <span>JubayerXtools</span>
+        </a>
+        <div class="nav-right">
+            <a href="/dashboard" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </div>
+    </nav>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main-content">
+
+        <h1 class="page-title">Support Center</h1>
+        <p class="page-subtitle">We're here to help! Choose a support channel below.</p>
+
+        <div class="content-box">
+
+            <!-- ===== SUPPORT CHANNELS ===== -->
+            <h2><i class="fas fa-headset" style="color:var(--primary);"></i> Contact Us</h2>
+
+            <div class="support-card">
+                <div class="icon"><i class="fab fa-telegram"></i></div>
+                <div class="info">
+                    <h4>Telegram Support</h4>
+                    <p>Join our Telegram group for instant support and updates</p>
+                </div>
+                <a href="https://t.me/JubayerExe" target="_blank" class="action-btn">
+                    <i class="fab fa-telegram"></i> Join Now
+                </a>
+            </div>
+
+            <div class="support-card">
+                <div class="icon"><i class="fas fa-envelope"></i></div>
+                <div class="info">
+                    <h4>Email Support</h4>
+                    <p>Send us an email and we'll respond within 24 hours</p>
+                </div>
+                <a href="mailto:support@jubayerxtools.com" class="action-btn">
+                    <i class="fas fa-envelope"></i> Send Email
+                </a>
+            </div>
+
+            <div class="support-card">
+                <div class="icon"><i class="fas fa-comments"></i></div>
+                <div class="info">
+                    <h4>Live Chat</h4>
+                    <p>Chat with our support team directly on Telegram</p>
+                </div>
+                <a href="https://t.me/JubayerExe" target="_blank" class="action-btn">
+                    <i class="fas fa-comment"></i> Start Chat
+                </a>
+            </div>
+
+            <div class="support-card">
+                <div class="icon"><i class="fab fa-github"></i></div>
+                <div class="info">
+                    <h4>GitHub Issues</h4>
+                    <p>Report bugs or suggest features on our GitHub repository</p>
+                </div>
+                <a href="https://github.com/jubayerxtools" target="_blank" class="action-btn">
+                    <i class="fab fa-github"></i> View Repository
+                </a>
+            </div>
+
+            <!-- ===== FAQ SECTION ===== -->
+            <h2 style="margin-top: 35px;"><i class="fas fa-question-circle" style="color:var(--primary);"></i> Frequently Asked Questions</h2>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="question">
+                    <span>How do I add money to my wallet?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="answer">
+                    Go to your Dashboard, click on "Add Money" from the dropdown menu, enter the amount (minimum ৳10, maximum ৳50,000), and confirm. The balance will be added instantly.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="question">
+                    <span>What payment methods are accepted?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="answer">
+                    We accept various payment methods including bKash, Nagad, Rocket, and bank transfers. All payments are processed securely. Please contact us for details.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="question">
+                    <span>How do I get my product after purchase?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="answer">
+                    After successful payment, you will be redirected to a success page where you can view your code(s) or download link. You can also view your orders anytime from the "My Orders" section in your profile.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="question">
+                    <span>What is the refund policy?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="answer">
+                    All digital product sales are final and non-refundable. Refunds may be considered only if the product is defective and cannot be delivered. Please contact support for any issues.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="question">
+                    <span>How do I use a coupon code?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="answer">
+                    During checkout, enter your coupon code in the coupon field and click "Apply". The discount will be applied to your total. Coupon codes are case-sensitive and can only be used once per user.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="question">
+                    <span>What should I do if I don't receive my code?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="answer">
+                    If you don't receive your code within 5 minutes of purchase, please contact our support team on Telegram or via email. Provide your order ID and we'll assist you immediately.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="question">
+                    <span>How do I contact support?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="answer">
+                    You can contact us through multiple channels: join our Telegram group <strong>@JubayerExe</strong>, send an email to <strong>support@jubayerxtools.com</strong>, or use the live chat feature on our website.
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer-text">
+            &copy; 2026 <span>JubayerXtools</span> — All Rights Reserved. Made with ❤️ by <span>JubayerExe</span>
+        </div>
+
+    </div>
+
+    <script>
+        function toggleFaq(element) {
+            const answer = element.querySelector('.answer');
+            const icon = element.querySelector('.question i');
+            
+            answer.classList.toggle('show');
+            icon.classList.toggle('rotate');
+        }
+
+        // Auto-open first FAQ
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstFaq = document.querySelector('.faq-item');
+            if (firstFaq) {
+                const answer = firstFaq.querySelector('.answer');
+                const icon = firstFaq.querySelector('.question i');
+                answer.classList.add('show');
+                icon.classList.add('rotate');
+            }
+        });
+    </script>
+
+</body>
+</html>

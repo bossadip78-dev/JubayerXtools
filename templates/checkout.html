@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Checkout - JubayerXtools</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <style>
+        :root {
+            --primary: #24C7F2;
+            --primary-glow: rgba(36, 199, 242, 0.25);
+            --primary-border: rgba(36, 199, 242, 0.15);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex; justify-content: center; align-items: center; padding: 40px;
+        }
+        .checkout-container {
+            background: #141b2d;
+            border: 1px solid var(--primary-border);
+            border-radius: 24px;
+            padding: 50px 40px;
+            max-width: 500px; width: 100%;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+            animation: slideUp 0.6s ease;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .checkout-title { text-align: center; font-size: 1.8rem; font-weight: 900; margin-bottom: 5px; background: linear-gradient(135deg, #24C7F2, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .checkout-subtitle { text-align: center; color: #94a3b8; margin-bottom: 30px; }
+
+        .product-preview {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--primary-border);
+            border-radius: 16px; padding: 25px; text-align: center; margin-bottom: 25px;
+        }
+        .product-preview .icon {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: rgba(36,199,242,0.08);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 12px; font-size: 2rem; color: var(--primary);
+        }
+        .product-preview .icon img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; }
+        .product-preview h3 { font-weight: 700; font-size: 1.1rem; }
+        .product-preview .price { font-size: 1.8rem; font-weight: 800; color: var(--primary); margin-top: 8px; text-shadow: 0 0 30px var(--primary-glow); }
+
+        .price-details {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--primary-border);
+            border-radius: 12px; padding: 20px; margin-bottom: 25px;
+        }
+        .price-row { display: flex; justify-content: space-between; padding: 8px 0; }
+        .price-row .label { color: #94a3b8; }
+        .price-row .value { font-weight: 600; }
+        .price-row.total {
+            border-top: 1px solid var(--primary-border);
+            padding-top: 12px; margin-top: 8px;
+            font-size: 1.1rem;
+        }
+        .price-row.total .value { color: var(--primary); font-size: 1.3rem; }
+
+        /* ===== COUPON SECTION ===== */
+        .coupon-section { margin-bottom: 20px; }
+        .coupon-section .coupon-input-group {
+            display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+        }
+        .coupon-section .coupon-input-group.hidden {
+            display: none;
+        }
+        .coupon-section .coupon-input-group input {
+            flex: 1; padding: 10px 15px;
+            border: 1px solid var(--primary-border);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.04);
+            color: #ffffff;
+            min-width: 150px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+        }
+        .coupon-section .coupon-input-group input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 4px var(--primary-glow);
+        }
+        .coupon-section .coupon-input-group input:disabled {
+            opacity: 0.5;
+        }
+        .coupon-apply-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 50px;
+            background: var(--primary);
+            color: #0a0a0a;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            min-width: 110px;
+            position: relative;
+        }
+        .coupon-apply-btn:hover:not(.processing) {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+        .coupon-apply-btn:disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* ===== PROCESSING STATE - SPINNER FIX ===== */
+        .coupon-apply-btn.processing {
+            pointer-events: none;
+            opacity: 0.85;
+        }
+        .coupon-apply-btn.processing .btn-text {
+            visibility: hidden;
+        }
+        .coupon-apply-btn.processing .spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #0a0a0a;
+            font-weight: 600;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        .coupon-apply-btn.processing .spinner i {
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .coupon-message { margin-top: 8px; font-size: 0.85rem; }
+        .coupon-applied {
+            display: none;
+            margin-top: 10px;
+            padding: 10px 15px;
+            border-radius: 10px;
+            background: rgba(34,197,94,0.08);
+            border: 1px solid rgba(34,197,94,0.2);
+        }
+        .coupon-applied.show { display: block; }
+        .coupon-applied .coupon-row {
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
+        }
+        .coupon-applied .coupon-row .discount-text {
+            color: #4ade80;
+        }
+        .coupon-applied .coupon-row .remove-btn {
+            background: none; border: none; color: #f87171; cursor: pointer; font-size: 0.85rem;
+            font-family: 'Inter', sans-serif;
+        }
+        .coupon-applied .coupon-row .remove-btn:hover { text-decoration: underline; }
+        .coupon-applied .coupon-detail {
+            display: flex; justify-content: space-between; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .coupon-applied .coupon-detail .discount-amount { color: #4ade80; }
+        .coupon-applied .coupon-final {
+            display: flex; justify-content: space-between; margin-top: 4px; font-weight: 700; font-size: 1.1rem;
+        }
+        .coupon-applied .coupon-final .final-price { color: var(--primary); }
+
+        .checkout-btn {
+            width: 100%; padding: 14px; border: none; border-radius: 12px;
+            background: var(--primary); color: #0a0a0a;
+            font-size: 1.1rem; font-weight: 700;
+            cursor: pointer; transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+        .checkout-btn:hover:not(:disabled) {
+            transform: scale(1.02);
+            box-shadow: 0 0 40px var(--primary-glow);
+        }
+        .checkout-btn:disabled { opacity: 0.6; pointer-events: none; }
+
+        .btn-processing .spinner {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-processing .spinner i { animation: spin 0.7s linear infinite; }
+
+        .back-link {
+            display: block; text-align: center; margin-top: 20px;
+            color: #94a3b8; text-decoration: none; font-size: 0.9rem;
+        }
+        .back-link:hover { color: #ffffff; }
+
+        .flash-message {
+            padding: 12px 18px; border-radius: 10px; margin-bottom: 15px; font-weight: 500;
+        }
+        .flash-message.error { background: rgba(239,68,68,0.12); color: #f87171; border-left: 3px solid #ef4444; }
+
+        @media (max-width: 480px) {
+            .checkout-container { padding: 30px 20px; }
+            .coupon-section .coupon-input-group { flex-direction: column; }
+            .coupon-section .coupon-input-group input { width: 100%; }
+            .coupon-apply-btn { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="checkout-container">
+
+        <h1 class="checkout-title">Checkout</h1>
+        <p class="checkout-subtitle">Review your order before payment</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="product-preview">
+            <div class="icon">
+                {% if order.product.logo %}
+                <img src="{{ order.product.logo }}" alt="{{ order.item_name }}">
+                {% else %}
+                <i class="fas fa-box"></i>
+                {% endif %}
+            </div>
+            <h3>{{ order.item_name }}</h3>
+            <div class="price" id="productPrice">৳{{ "%.2f"|format(order.item_price) }}</div>
+        </div>
+
+        <!-- ===== PRICE DETAILS ===== -->
+        <div class="price-details" id="priceDetails">
+            <div class="price-row">
+                <span class="label">Subtotal</span>
+                <span class="value" id="subtotalValue">৳{{ "%.2f"|format(order.item_price) }}</span>
+            </div>
+            <div class="price-row" id="discountRow" style="display:none;">
+                <span class="label" style="color:#4ade80;">Discount</span>
+                <span class="value" style="color:#4ade80;" id="discountValue">-৳0.00</span>
+            </div>
+            <div class="price-row total">
+                <span class="label">Total</span>
+                <span class="value" id="totalValue">৳{{ "%.2f"|format(order.item_price) }}</span>
+            </div>
+        </div>
+
+        <!-- ===== COUPON SECTION ===== -->
+        <div class="coupon-section">
+            <div class="coupon-input-group" id="couponInputGroup">
+                <input type="text" id="couponInput" placeholder="Enter coupon code" style="text-transform:uppercase;">
+                <button class="coupon-apply-btn" id="applyCouponBtn" onclick="applyCoupon()">
+                    <span class="btn-text"><i class="fas fa-tag"></i> Apply</span>
+                </button>
+            </div>
+            <div class="coupon-message" id="couponMessage"></div>
+            <div class="coupon-applied" id="couponApplied">
+                <div class="coupon-row">
+                    <span class="discount-text"><i class="fas fa-check-circle"></i> Coupon applied! <span id="discountPercent"></span>% off</span>
+                    <button class="remove-btn" onclick="removeCoupon()"><i class="fas fa-times"></i> Remove</button>
+                </div>
+                <div class="coupon-detail">
+                    <span style="color:#94a3b8;">Discount</span>
+                    <span class="discount-amount" id="discountAmount">-৳0.00</span>
+                </div>
+                <div class="coupon-final">
+                    <span style="color:#94a3b8;">Final Price</span>
+                    <span class="final-price" id="finalPriceDisplay">৳0.00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== CONFIRM BUTTON ===== -->
+        <button class="checkout-btn" id="confirmBtn" onclick="confirmPayment('{{ order.order_id }}')">
+            <span class="btn-text"><i class="fas fa-lock"></i> Confirm Checkout</span>
+        </button>
+
+        <a href="/dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    </div>
+
+    <script>
+        let originalPrice = {{ order.item_price }};
+        let currentFinalPrice = originalPrice;
+        let couponApplied = false;
+
+        // ===== APPLY COUPON WITH 3s PROCESSING =====
+        function applyCoupon() {
+            const code = document.getElementById('couponInput').value.trim();
+            if (!code) {
+                document.getElementById('couponMessage').innerHTML = '<span style="color: #f87171;">Please enter a coupon code!</span>';
+                return;
+            }
+
+            const btn = document.getElementById('applyCouponBtn');
+            const inputGroup = document.getElementById('couponInputGroup');
+            
+            // ===== 3s PROCESSING - Spinner ঘুরবে =====
+            btn.classList.add('processing');
+            btn.innerHTML = `
+                <span class="spinner">
+                    <i class="fas fa-spinner"></i> Checking...
+                </span>
+                <span class="btn-text"><i class="fas fa-tag"></i> Apply</span>
+            `;
+            document.getElementById('couponMessage').innerHTML = '<span style="color: #60a5fa;">Checking coupon...</span>';
+
+            setTimeout(function() {
+                fetch('/apply-coupon', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        order_id: '{{ order.order_id }}',
+                        coupon_code: code
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    btn.classList.remove('processing');
+                    btn.innerHTML = `<span class="btn-text"><i class="fas fa-tag"></i> Apply</span>`;
+
+                    if (data.error) {
+                        document.getElementById('couponMessage').innerHTML = `<span style="color: #f87171;">${data.error}</span>`;
+                        return;
+                    }
+
+                    couponApplied = true;
+                    currentFinalPrice = data.final_price;
+
+                    // ===== HIDE INPUT & APPLY BUTTON =====
+                    inputGroup.classList.add('hidden');
+
+                    document.getElementById('couponMessage').innerHTML = '';
+                    document.getElementById('couponApplied').classList.add('show');
+                    document.getElementById('discountPercent').textContent = data.discount_percent;
+                    document.getElementById('discountAmount').textContent = `-৳${data.discount.toFixed(2)}`;
+                    document.getElementById('finalPriceDisplay').textContent = `৳${data.final_price.toFixed(2)}`;
+
+                    document.getElementById('discountRow').style.display = 'flex';
+                    document.getElementById('discountValue').textContent = `-৳${data.discount.toFixed(2)}`;
+                    document.getElementById('totalValue').textContent = `৳${data.final_price.toFixed(2)}`;
+                })
+                .catch(() => {
+                    btn.classList.remove('processing');
+                    btn.innerHTML = `<span class="btn-text"><i class="fas fa-tag"></i> Apply</span>`;
+                    document.getElementById('couponMessage').innerHTML = '<span style="color: #f87171;">Error applying coupon!</span>';
+                });
+            }, 3000);
+        }
+
+        // ===== REMOVE COUPON =====
+        function removeCoupon() {
+            const inputGroup = document.getElementById('couponInputGroup');
+            
+            fetch('/remove-coupon', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    order_id: '{{ order.order_id }}'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    couponApplied = false;
+                    currentFinalPrice = originalPrice;
+
+                    // ===== SHOW INPUT & APPLY BUTTON =====
+                    inputGroup.classList.remove('hidden');
+                    document.getElementById('couponInput').value = '';
+                    document.getElementById('couponInput').disabled = false;
+
+                    document.getElementById('couponApplied').classList.remove('show');
+                    document.getElementById('couponMessage').innerHTML = '<span style="color: #4ade80;">Coupon removed!</span>';
+
+                    document.getElementById('discountRow').style.display = 'none';
+                    document.getElementById('totalValue').textContent = `৳${originalPrice.toFixed(2)}`;
+                }
+            });
+        }
+
+        // ===== CONFIRM PAYMENT =====
+        function confirmPayment(orderId) {
+            const btn = document.getElementById('confirmBtn');
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner"><i class="fas fa-spinner"></i> Processing Payment...</span>`;
+
+            setTimeout(function() {
+                fetch('/process-payment/' + orderId, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = '/success/' + orderId;
+                    } else {
+                        alert('Payment failed: ' + data.error);
+                        btn.disabled = false;
+                        btn.innerHTML = `<span class="btn-text"><i class="fas fa-lock"></i> Confirm Checkout</span>`;
+                    }
+                })
+                .catch(() => {
+                    alert('An error occurred. Please try again.');
+                    btn.disabled = false;
+                    btn.innerHTML = `<span class="btn-text"><i class="fas fa-lock"></i> Confirm Checkout</span>`;
+                });
+            }, 5000);
+        }
+    </script>
+
+</body>
+</html>

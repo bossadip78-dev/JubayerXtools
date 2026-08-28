@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Privacy Policy - JubayerXtools</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <style>
+        :root {
+            --primary: #24C7F2;
+            --primary-glow: rgba(36, 199, 242, 0.25);
+            --primary-border: rgba(36, 199, 242, 0.15);
+            --primary-hover: rgba(36, 199, 242, 0.08);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            padding: 12px 40px;
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--primary-border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-logo {
+            display: flex; align-items: center; gap: 10px;
+            padding: 4px 12px;
+            border: 2px solid var(--primary-border);
+            border-radius: 12px;
+            transition: 0.4s;
+            background: rgba(36,199,242,0.03);
+        }
+        .nav-logo:hover { border-color: var(--primary); box-shadow: 0 0 30px var(--primary-glow); }
+        .nav-logo img { height: 35px; width: auto; }
+        .nav-logo span {
+            font-size: 1.3rem; font-weight: 900;
+            color: var(--primary);
+            text-shadow: 0 0 20px var(--primary-glow);
+        }
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .nav-right a {
+            color: #94a3b8; font-weight: 500; font-size: 0.9rem;
+            transition: 0.3s; text-decoration: none;
+        }
+        .nav-right a:hover { color: #ffffff; }
+        .nav-right .back-btn {
+            padding: 8px 20px;
+            border: 1px solid var(--primary-border);
+            border-radius: 50px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: 0.3s;
+        }
+        .nav-right .back-btn:hover {
+            border-color: var(--primary);
+            color: #ffffff;
+            background: var(--primary-hover);
+        }
+
+        .main-content {
+            margin-top: 100px;
+            padding: 30px 40px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            color: var(--primary);
+            text-shadow: 0 0 30px var(--primary-glow);
+        }
+        .page-subtitle {
+            color: #94a3b8;
+            font-size: 1rem;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--primary-border);
+            padding-bottom: 20px;
+        }
+
+        .content-box {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--primary-border);
+            border-radius: 16px;
+            padding: 35px;
+        }
+        .content-box h2 {
+            color: var(--primary);
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+        .content-box h2:first-child {
+            margin-top: 0;
+        }
+        .content-box p {
+            color: #cbd5e1;
+            line-height: 1.8;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+        }
+        .content-box ul {
+            color: #cbd5e1;
+            line-height: 1.8;
+            padding-left: 20px;
+            margin-bottom: 12px;
+        }
+        .content-box ul li {
+            margin-bottom: 6px;
+        }
+
+        .footer-text {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.8rem;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--primary-border);
+        }
+        .footer-text span {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .navbar { padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
+            .nav-logo { padding: 2px 8px; border-width: 1.5px; border-radius: 8px; gap: 6px; }
+            .nav-logo img { height: 28px; }
+            .nav-logo span { font-size: 1rem; }
+            .nav-right { gap: 10px; }
+            .nav-right .back-btn { padding: 5px 14px; font-size: 0.75rem; }
+
+            .main-content { padding: 15px 12px; margin-top: 80px; }
+            .page-title { font-size: 1.8rem; }
+            .content-box { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <a href="/" class="nav-logo">
+            <img src="https://i.ibb.co.com/KxSnyTjy/635d5463-6cd3-485e-bd05-907c07468d3a.png" alt="JubayerXtools">
+            <span>JubayerXtools</span>
+        </a>
+        <div class="nav-right">
+            <a href="/dashboard" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </div>
+    </nav>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main-content">
+
+        <h1 class="page-title">Privacy Policy</h1>
+        <p class="page-subtitle">Last updated: August 2026</p>
+
+        <div class="content-box">
+
+            <h2>1. Information We Collect</h2>
+            <p>We collect information you provide directly, such as:</p>
+            <ul>
+                <li>Name and username</li>
+                <li>Email address</li>
+                <li>Phone number</li>
+                <li>Payment information (processed securely)</li>
+                <li>Transaction history</li>
+            </ul>
+
+            <h2>2. How We Use Your Information</h2>
+            <ul>
+                <li>To provide and maintain our services</li>
+                <li>To process your transactions</li>
+                <li>To send you important updates and notifications</li>
+                <li>To improve our products and services</li>
+                <li>To respond to your support requests</li>
+            </ul>
+
+            <h2>3. Data Security</h2>
+            <p>We implement appropriate security measures to protect your personal information. However, no method of transmission over the internet is 100% secure. We cannot guarantee absolute security.</p>
+
+            <h2>4. Third-Party Services</h2>
+            <p>We use third-party services for:</p>
+            <ul>
+                <li>Payment processing</li>
+                <li>Google OAuth authentication</li>
+                <li>Hosting and infrastructure</li>
+            </ul>
+            <p>These services have their own privacy policies.</p>
+
+            <h2>5. Cookies</h2>
+            <p>We use cookies to maintain your session and improve user experience. You can disable cookies in your browser settings, but this may affect some functionality.</p>
+
+            <h2>6. Data Retention</h2>
+            <p>We retain your data as long as your account is active. You may request deletion of your account and associated data at any time.</p>
+
+            <h2>7. Your Rights</h2>
+            <ul>
+                <li>Access your personal data</li>
+                <li>Request correction of incorrect data</li>
+                <li>Request deletion of your data</li>
+                <li>Withdraw consent at any time</li>
+            </ul>
+
+            <h2>8. Children's Privacy</h2>
+            <p>Our services are not intended for users under 13 years of age. We do not knowingly collect personal information from children under 13.</p>
+
+            <h2>9. Changes to This Policy</h2>
+            <p>We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy on this page.</p>
+
+            <h2>10. Contact</h2>
+            <p>If you have any questions about this Privacy Policy, please contact us at: <strong style="color:var(--primary);">support@jubayerxtools.com</strong></p>
+
+        </div>
+
+        <div class="footer-text">
+            &copy; 2026 <span>JubayerXtools</span> — All Rights Reserved. Made with ❤️ by <span>JubayerExe</span>
+        </div>
+
+    </div>
+
+</body>
+</html>
