@@ -14,7 +14,6 @@
             --primary-hover: rgba(36, 199, 242, 0.08);
             --primary-light: rgba(36, 199, 242, 0.04);
             --sidebar-width: 260px;
-            --sidebar-collapsed: 0px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -74,7 +73,7 @@
         }
         .sidebar-menu a i { width: 20px; color: var(--primary); }
 
-        /* ===== SIDEBAR OVERLAY (MOBILE) ===== */
+        /* ===== SIDEBAR OVERLAY ===== */
         .sidebar-overlay {
             display: none;
             position: fixed;
@@ -85,11 +84,9 @@
             background: rgba(0,0,0,0.6);
             z-index: 999;
         }
-        .sidebar-overlay.active {
-            display: block;
-        }
+        .sidebar-overlay.active { display: block; }
 
-        /* ===== HAMBURGER (MOBILE) ===== */
+        /* ===== HAMBURGER ===== */
         .hamburger {
             display: none;
             position: fixed;
@@ -105,9 +102,7 @@
             font-size: 1.3rem;
             transition: 0.3s;
         }
-        .hamburger:hover {
-            border-color: var(--primary);
-        }
+        .hamburger:hover { border-color: var(--primary); }
 
         /* ===== MAIN CONTENT ===== */
         .main-content {
@@ -224,6 +219,8 @@
             outline: none;
             box-shadow: 0 0 0 4px var(--primary-glow);
         }
+        .full-width { grid-column: 1 / -1; }
+        .btn-center { display: flex; justify-content: center; margin-top: 10px; }
 
         .table-container { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 600px; }
@@ -470,9 +467,7 @@
             font-size: 0.7rem;
             font-family: 'Inter', sans-serif;
         }
-        .delete-cat-btn:hover {
-            background: rgba(239,68,68,0.2);
-        }
+        .delete-cat-btn:hover { background: rgba(239,68,68,0.2); }
 
         /* ========================================
            RESPONSIVE
@@ -487,15 +482,9 @@
                 transform: translateX(-100%);
                 width: 280px;
             }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .sidebar-overlay.active {
-                display: block;
-            }
-            .hamburger {
-                display: block;
-            }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay.active { display: block; }
+            .hamburger { display: block; }
             .main-content {
                 margin-left: 0;
                 padding: 80px 15px 20px;
@@ -518,9 +507,7 @@
                 grid-template-columns: 1fr 1fr;
                 gap: 6px;
             }
-            .variant-row .remove-variant {
-                grid-column: span 2;
-            }
+            .variant-row .remove-variant { grid-column: span 2; }
             table { min-width: 100%; font-size: 0.8rem; }
             table th, table td { padding: 8px 6px; }
             .section-header { flex-direction: column; align-items: stretch; }
@@ -534,9 +521,7 @@
             .variant-row {
                 grid-template-columns: 1fr;
             }
-            .variant-row .remove-variant {
-                grid-column: span 1;
-            }
+            .variant-row .remove-variant { grid-column: span 1; }
             .edit-popup-box { padding: 20px 15px; }
             .top-bar .logout-btn { width: 100%; text-align: center; }
         }
@@ -700,6 +685,7 @@
 
         <!-- ===== PRODUCTS ===== -->
         <div id="tab-products" class="tab-content">
+            <!-- Add Product -->
             <div class="section-card">
                 <div class="section-header"><div class="section-title">Add Product</div></div>
                 <form method="POST" action="/admin/create-product" id="addProductForm">
@@ -713,11 +699,18 @@
 
                         <div class="form-group" id="fileLinkGroup"><label>File Link</label><input type="text" name="file_link" placeholder="https://example.com/file.zip"></div>
                         <div class="form-group" id="codeGroup" style="display:none;"><label>Codes (one per line)</label><textarea name="codes" rows="4" placeholder="CODE1&#10;CODE2&#10;CODE3"></textarea></div>
-                        <div class="form-group" style="justify-content: flex-end; grid-column: 1 / -1;"><button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Add Product</button></div>
+
+                        <!-- 👇 Centered Submit Button -->
+                        <div class="form-group full-width btn-center">
+                            <button type="submit" class="btn btn-primary" style="padding: 12px 50px; font-size: 1rem; min-width: 200px;">
+                                <i class="fas fa-plus"></i> Add Product
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
 
+            <!-- All Products -->
             <div class="section-card">
                 <div class="section-header"><div class="section-title">All Products</div></div>
                 <div class="admin-products-grid">
