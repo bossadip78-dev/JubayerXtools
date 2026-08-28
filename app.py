@@ -34,7 +34,7 @@ BOHUDUR_API_KEY = "t3Q7lrUau2E8dHg0oyjc4pvKWsRAOqmD"
 BOHUDUR_API_URL = "https://request.bohudur.one/create/v2/"
 
 # ============================================
-# WEBHOOK URL
+# WEBHOOK URL (Webhook Server)
 # ============================================
 WEBHOOK_URL = "https://jubayerxtools-webhook.vercel.app"
 
@@ -215,24 +215,19 @@ def is_maintenance_on():
     return maintenance and maintenance.is_enabled
 
 def generate_order_id(user_id: int) -> str:
-    """ইউনিক অর্ডার আইডি জেনারেট করে"""
     return f"JX{int(time.time())}{''.join(random.choices(string.ascii_uppercase + string.digits, k=6))}"
 
 def create_bohudur_payment(amount: int, user_id: int, username: str = None) -> dict:
-    """
-    Bohudur API ব্যবহার করে পেমেন্ট লিংক তৈরি করে
-    """
     try:
         order_id = generate_order_id(user_id)
         my_reference = f"JX_{amount}TAKA_{order_id}_{user_id}"
         
-        # Webhook URL
         base_url = WEBHOOK_URL
         redirect_url = f"{base_url}/payment/success?paymentkey={my_reference}&user_id={user_id}&amount={amount}"
         cancel_url = f"{base_url}/payment/cancel"
         
         payload = {
-            "full_name": username or f"BUY-jubayerXtools-PRODUCT",
+            "full_name": f"User_{user_id}",
             "email": f"user{user_id}@jubayerxtools.com",
             "amount": amount,
             "return_type": "GET",
@@ -254,7 +249,7 @@ def create_bohudur_payment(amount: int, user_id: int, username: str = None) -> d
         response = requests.post(BOHUDUR_API_URL, json=payload, headers=headers, timeout=30)
         result = response.json()
         
-        print(f"Bohudur Response: {result}")  # Debug
+        print(f"Bohudur Response: {result}")
         
         if result.get("responseCode") == 200:
             bohudur_payment_key = result.get("paymentkey")
@@ -638,7 +633,6 @@ pending_payments = {}
 @app.route('/create-payment', methods=['POST'])
 @login_required
 def create_payment():
-    """Create Bohudur payment link"""
     if is_maintenance_on() and not current_user.is_admin:
         return jsonify({'error': 'Site is under maintenance'}), 503
     
@@ -681,6 +675,64 @@ def create_payment():
             
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+# ============================================
+# PAYMENT WEBHOOK HANDLER
+# ============================================
+
+@app.route('/payment/webhook', methods=['POST'])
+def payment_webhook():
+    try:
+        data = request.get_json()
+        print(f"📩 Webhook Data: {data}")
+        
+        payment_key = data.get('paymentkey')
+        user_id = data.get('user_id')
+        amount = data.get('amount')
+        status = data.get('status')
+        
+        if status != 'success':
+            return jsonify({'status': 'ignored', 'message': 'Status not success'}), 200
+        
+        if not payment_key or not user_id or not amount:
+            return jsonify({'status': 'error', 'message': 'Missing data'}), 400
+        
+        if payment_key in pending_payments:
+            pending_payments.pop(payment_key)
+        
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'status': 'error', 'message': 'User not found'}), 404
+        
+        user.balance += amount
+        
+        tx = Transaction(
+            user_id=user.id,
+            amount=amount,
+            type='add',
+            description=f'Added ৳{amount} via Bohudur Payment (Webhook)',
+            status='completed'
+        )
+        db.session.add(tx)
+        
+        notif = Notification(
+            user_id=user.id,
+            title='💰 Payment Successful',
+            message=f'Added ৳{amount} to your wallet via Bohudur Payment.',
+            is_read=False
+        )
+        db.session.add(notif)
+        
+        db.session.commit()
+        
+        print(f"✅ Balance added: {amount} to user {user_id}")
+        
+        return jsonify({'status': 'success', 'message': 'Balance added'}), 200
+        
+    except Exception as e:
+        print(f"❌ Webhook Error: {e}")
+        db.session.rollback()
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 # ============================================
 # TERMS, PRIVACY, SUPPORT ROUTES
@@ -1054,6 +1106,34 @@ def admin_dashboard():
                          total_orders=total_orders,
                          total_revenue=total_revenue)
 
+# ============================================
+# CATEGORY DELETE ROUTE
+# ============================================
+
+@app.route('/admin/delete-category/<int:category_id>', methods=['POST'])
+@login_required
+def delete_category(category_id):
+    if not current_user.is_admin:
+        flash('Access denied!', 'error')
+        return redirect(url_for('login_page'))
+    
+    category = Category.query.get_or_404(category_id)
+    
+    # Check if category has products
+    if category.products:
+        flash(f'Cannot delete "{category.name}" because it has {len(category.products)} products. Delete products first or reassign them.', 'error')
+        return redirect(url_for('admin_dashboard'))
+    
+    db.session.delete(category)
+    db.session.commit()
+    
+    flash(f'Category "{category.name}" deleted successfully!', 'success')
+    return redirect(url_for('admin_dashboard'))
+
+# ============================================
+# ADMIN COUPON ROUTES
+# ============================================
+
 @app.route('/admin/create-coupon', methods=['POST'])
 @login_required
 def create_coupon():
@@ -1313,7 +1393,7 @@ def delete_product(product_id):
     flash('Product deleted successfully!', 'success')
     return redirect(url_for('admin_dashboard'))
 
-@app.route('/admin/update-product/<int:product_id>', methods=['POST'])
+@app.route('/admin/update-product/<int:product_id>', methods(['POST'])
 @login_required
 def update_product(product_id):
     if not current_user.is_admin:
@@ -1570,69 +1650,6 @@ def update_user_balance():
     db.session.commit()
     flash(f'Balance updated for {user.username}!', 'success')
     return redirect(url_for('admin_dashboard'))
-
-# ============================================
-# WEBHOOK HANDLER (Flask App)
-# ============================================
-
-@app.route('/payment/webhook', methods=['POST'])
-def payment_webhook():
-    """Webhook থেকে ডেটা গ্রহণ করে ব্যালেন্স যোগ করে"""
-    try:
-        data = request.get_json()
-        print(f"📩 Webhook Data: {data}")
-        
-        payment_key = data.get('paymentkey')
-        user_id = data.get('user_id')
-        amount = data.get('amount')
-        status = data.get('status')
-        
-        if status != 'success':
-            return jsonify({'status': 'ignored', 'message': 'Status not success'}), 200
-        
-        if not payment_key or not user_id or not amount:
-            return jsonify({'status': 'error', 'message': 'Missing data'}), 400
-        
-        # Check if already processed
-        if payment_key in pending_payments:
-            pending_payments.pop(payment_key)
-        
-        # Add balance
-        user = User.query.get(user_id)
-        if not user:
-            return jsonify({'status': 'error', 'message': 'User not found'}), 404
-        
-        user.balance += amount
-        
-        # Create transaction
-        tx = Transaction(
-            user_id=user.id,
-            amount=amount,
-            type='add',
-            description=f'Added ৳{amount} via Bohudur Payment (Webhook)',
-            status='completed'
-        )
-        db.session.add(tx)
-        
-        # Create notification
-        notif = Notification(
-            user_id=user.id,
-            title='💰 Payment Successful',
-            message=f'Added ৳{amount} to your wallet via Bohudur Payment.',
-            is_read=False
-        )
-        db.session.add(notif)
-        
-        db.session.commit()
-        
-        print(f"✅ Balance added: {amount} to user {user_id}")
-        
-        return jsonify({'status': 'success', 'message': 'Balance added'}), 200
-        
-    except Exception as e:
-        print(f"❌ Webhook Error: {e}")
-        db.session.rollback()
-        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 # ============================================
 # NOTIFICATION API ROUTES
