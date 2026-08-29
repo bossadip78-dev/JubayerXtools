@@ -198,7 +198,7 @@ def create_bohudur_payment(amount, user_id, username=None):
         cancel_url = f"{base_url}/payment/cancel"
         
         payload = {
-            "full_name": f"jubayer user",
+            "full_name": f"User {user_id}",
             "email": f"user{user_id}@jubayerxtools.com",
             "amount": amount,
             "return_type": "GET",
@@ -1227,7 +1227,7 @@ def admin_dashboard():
                          total_revenue=total_revenue)
 
 # ============================================
-# ADMIN CATEGORY DELETE ROUTE (NEW)
+# ADMIN CATEGORY DELETE ROUTE
 # ============================================
 
 @app.route('/admin/delete-category/<category_id>', methods=['POST'])
