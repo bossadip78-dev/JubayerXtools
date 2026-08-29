@@ -202,7 +202,7 @@ def create_bohudur_payment(amount, user_id, username=None):
         cancel_url = f"{base_url}/payment/cancel"
         
         payload = {
-            "full_name": f"User_{user_id}",
+            "full_name": f"BUY-PRODUCT",
             "email": f"user{user_id}@jubayerxtools.com",
             "amount": amount,
             "return_type": "GET",
