@@ -674,7 +674,7 @@
                                 <td>{{ category.name }}</td>
                                 <td><i class="fas {{ category.icon or 'fa-tag' }}"></i> {{ category.icon or 'fa-tag' }}</td>
                                 <td>{{ category.products|length }}</td>
-                                <td>{{ category.created_at.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ category.created_at[:10] if category.created_at else 'N/A' }}</td>
                                 <td>
                                     <form method="POST" action="/admin/delete-category/{{ category.id }}" style="display:inline;" onsubmit="return confirm('Delete this category? This will also delete all products in this category.')">
                                         <button type="submit" class="delete-cat-btn"><i class="fas fa-trash"></i> Delete</button>
