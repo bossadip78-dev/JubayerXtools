@@ -26,7 +26,6 @@
         ::-webkit-scrollbar-track { background: #0a0a0a; }
         ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
 
-        /* ===== SIDEBAR ===== */
         .sidebar {
             position: fixed;
             left: 0;
@@ -73,7 +72,6 @@
         }
         .sidebar-menu a i { width: 20px; color: var(--primary); }
 
-        /* ===== SIDEBAR OVERLAY ===== */
         .sidebar-overlay {
             display: none;
             position: fixed;
@@ -86,7 +84,6 @@
         }
         .sidebar-overlay.active { display: block; }
 
-        /* ===== HAMBURGER ===== */
         .hamburger {
             display: none;
             position: fixed;
@@ -104,7 +101,6 @@
         }
         .hamburger:hover { border-color: var(--primary); }
 
-        /* ===== MAIN CONTENT ===== */
         .main-content {
             margin-left: var(--sidebar-width);
             padding: 30px;
@@ -179,7 +175,6 @@
         }
         .section-title { font-size: 1.1rem; font-weight: 700; }
 
-        /* ===== BUTTONS - ALL CENTERED ===== */
         .btn {
             padding: 10px 30px;
             border: none;
@@ -393,7 +388,6 @@
             text-align: center;
         }
 
-        /* ===== VARIANT STYLES ===== */
         .variant-row {
             display: grid;
             grid-template-columns: 2fr 1fr 1fr 0.7fr 0.4fr;
@@ -455,7 +449,6 @@
             color: #cbd5e1;
         }
 
-        /* ===== CATEGORY DELETE ===== */
         .delete-cat-btn {
             background: rgba(239,68,68,0.1);
             color: #f87171;
@@ -469,9 +462,6 @@
         }
         .delete-cat-btn:hover { background: rgba(239,68,68,0.2); }
 
-        /* ========================================
-           RESPONSIVE
-        ======================================== */
         @media (max-width: 992px) {
             .sidebar { width: 220px; }
             .main-content { margin-left: 220px; }
@@ -536,15 +526,12 @@
 </head>
 <body>
 
-    <!-- ===== HAMBURGER (MOBILE) ===== -->
     <button class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()">
         <i class="fas fa-bars"></i>
     </button>
 
-    <!-- ===== SIDEBAR OVERLAY ===== -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-    <!-- ===== SIDEBAR ===== -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-logo">
             <img src="https://i.ibb.co.com/KxSnyTjy/635d5463-6cd3-485e-bd05-907c07468d3a.png" alt="JubayerXtools">
@@ -565,7 +552,6 @@
         </ul>
     </div>
 
-    <!-- ===== MAIN CONTENT ===== -->
     <div class="main-content">
 
         <div class="top-bar">
@@ -605,7 +591,7 @@
                                 <td>{{ order.item_name }}</td>
                                 <td>৳{{ "%.2f"|format(order.item_price) }}</td>
                                 <td><span class="badge badge-{{ order.status }}">{{ order.status|capitalize }}</span></td>
-                                <td>{{ order.created_at.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ order.created_at[:10] if order.created_at else 'N/A' }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -690,7 +676,6 @@
 
         <!-- ===== PRODUCTS ===== -->
         <div id="tab-products" class="tab-content">
-            <!-- Add Product -->
             <div class="section-card">
                 <div class="section-header"><div class="section-title">Add Product</div></div>
                 <form method="POST" action="/admin/create-product" id="addProductForm">
@@ -714,7 +699,6 @@
                 </form>
             </div>
 
-            <!-- All Products -->
             <div class="section-card">
                 <div class="section-header"><div class="section-title">All Products</div></div>
                 <div class="admin-products-grid">
@@ -828,7 +812,7 @@
                                 <td><span class="badge badge-{{ order.status }}">{{ order.status|capitalize }}</span></td>
                                 <td>{% if order.coupon_code %}<span style="color:var(--primary);">{{ order.coupon_code }}</span>{% else %}N/A{% endif %}</td>
                                 <td><code style="background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;">{{ order.code_used or 'N/A' }}</code></td>
-                                <td>{{ order.created_at.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ order.created_at[:10] if order.created_at else 'N/A' }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -954,7 +938,7 @@
                                 <td>{{ notif.title }}</td>
                                 <td>{{ notif.message }}</td>
                                 <td><span class="badge {% if notif.is_read %}badge-completed{% else %}badge-pending{% endif %}">{% if notif.is_read %}Read{% else %}Unread{% endif %}</span></td>
-                                <td>{{ notif.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>{{ notif.created_at[:16] if notif.created_at else 'N/A' }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -1024,7 +1008,6 @@
                     <div class="form-group"><label>Category</label><select name="category_id" id="editCategory" required>{% for category in categories %}<option value="{{ category.id }}">{{ category.name }}</option>{% endfor %}</select></div>
                     <div class="form-group"><label>Product Type</label><input type="text" id="editProductType" disabled style="opacity:0.7;"></div>
 
-                    <!-- Edit Variants -->
                     <div class="form-group full-width" id="editVariantsList" style="grid-column: 1 / -1;">
                         <label>Current Variants</label>
                         <div id="editVariantsDisplay" style="background:rgba(255,255,255,0.02);border:1px solid var(--primary-border);border-radius:10px;padding:12px;margin-top:5px;">
@@ -1066,11 +1049,7 @@
         </div>
     </div>
 
-    <!-- ========================================
-       JAVASCRIPT
-    ======================================== -->
     <script>
-        // ===== SIDEBAR TOGGLE (MOBILE) =====
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
@@ -1087,7 +1066,6 @@
             }
         }
 
-        // ===== TAB SWITCHING =====
         document.querySelectorAll('.sidebar-menu a[data-tab]').forEach(link => {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -1103,7 +1081,6 @@
             });
         });
 
-        // ===== PRODUCT TYPE FIELDS =====
         function toggleAdminProductFields() {
             const type = document.getElementById('adminProductType').value;
             const fileGroup = document.getElementById('fileLinkGroup');
@@ -1117,7 +1094,6 @@
             }
         }
 
-        // ===== EDIT VARIANT ROWS =====
         function addEditVariantRow() {
             const container = document.getElementById('editVariantInputs');
             const row = document.createElement('div');
@@ -1141,7 +1117,6 @@
             }
         }
 
-        // ===== EDIT POPUP =====
         function openEditPopup(productId) {
             fetch('/admin/get-product/' + productId)
                 .then(response => response.json())
