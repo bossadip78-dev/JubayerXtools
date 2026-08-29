@@ -587,7 +587,7 @@
                             {% for order in orders[:10] %}
                             <tr>
                                 <td>#{{ order.order_id }}</td>
-                                <td>{{ order.user.username }}</td>
+                                <td>{{ order.user.username if order.user else 'N/A' }}</td>
                                 <td>{{ order.item_name }}</td>
                                 <td>৳{{ "%.2f"|format(order.item_price) }}</td>
                                 <td><span class="badge badge-{{ order.status }}">{{ order.status|capitalize }}</span></td>
@@ -715,7 +715,7 @@
                         <div class="variant-badge"><i class="fas fa-layer-group"></i> Has Variants</div>
                         {% endif %}
                         <h4>{{ product.name }}</h4>
-                        <div style="color: #94a3b8; font-size: 0.75rem;">{{ product.category.name }}</div>
+                        <div style="color: #94a3b8; font-size: 0.75rem;">{{ product.category_name }}</div>
                         <div class="price">৳{{ "%.2f"|format(product.price) }}</div>
                         <div class="stock-info">
                             {% if product.product_type == 'code' and not product.has_variants %}
@@ -768,7 +768,7 @@
                             {% for variant in variants %}
                             <tr>
                                 <td>{{ variant.id }}</td>
-                                <td><span style="color:var(--primary);">{{ variant.product.name }}</span></td>
+                                <td><span style="color:var(--primary);">{{ variant.product_name }}</span></td>
                                 <td><span class="variant-tag">{{ variant.name }}</span></td>
                                 <td style="color:var(--primary);font-weight:600;">৳{{ "%.2f"|format(variant.price) }}</td>
                                 <td>{{ variant.validity or 'N/A' }}</td>
@@ -806,7 +806,7 @@
                             {% for order in orders %}
                             <tr>
                                 <td>#{{ order.order_id }}</td>
-                                <td>{{ order.user.username }}</td>
+                                <td>{{ order.user.username if order.user else 'N/A' }}</td>
                                 <td>{{ order.item_name }}</td>
                                 <td>৳{{ "%.2f"|format(order.item_price) }}</td>
                                 <td><span class="badge badge-{{ order.status }}">{{ order.status|capitalize }}</span></td>
@@ -851,7 +851,7 @@
                                 <td><span class="badge {% if coupon.is_active %}badge-active{% else %}badge-inactive{% endif %}">{% if coupon.is_active %}Active{% else %}Used{% endif %}</span></td>
                                 <td>
                                     {% if coupon.used_by %}
-                                        {% set user = user_dict.get(coupon.used_by) if user_dict else None %}
+                                        {% set user = user_dict.get(coupon.used_by|string) if user_dict else None %}
                                         {% if user %}{{ user.username }}{% else %}<span style="color:#64748b;">Deleted User</span>{% endif %}
                                     {% else %}<span style="color:#64748b;">-</span>{% endif %}
                                 </td>
