@@ -61,12 +61,20 @@ else:
     airdrop_codes_collection = None
 
 # ============================================
-# CREATE INDEXES
+# CREATE INDEXES (FIXED - Google ID Issue)
 # ============================================
 if db is not None:
     try:
+        # Drop old google_id index if exists
+        try:
+            users_collection.drop_index("google_id_1")
+            print("✅ Dropped old google_id index")
+        except:
+            pass
+        
         users_collection.create_index("username", unique=True)
         users_collection.create_index("email", unique=True)
+        # 🔧 FIX: sparse=True so null values don't cause duplicate error
         users_collection.create_index("google_id", unique=True, sparse=True)
         categories_collection.create_index("name", unique=True)
         coupons_collection.create_index("code", unique=True)
@@ -237,14 +245,14 @@ def create_bohudur_payment(amount, user_id, username=None):
         return {"success": False, "error": str(e)}
 
 # ============================================
-# CREATE DEFAULT DATA
+# CREATE DEFAULT DATA (FIXED - No google_id: None)
 # ============================================
 
 def init_db():
     if users_collection is None:
         return
     
-    # Admin User
+    # Admin User (google_id excluded to avoid duplicate key error)
     if not users_collection.find_one({'username': 'admin'}):
         users_collection.insert_one({
             'user_id': 1,
@@ -253,7 +261,6 @@ def init_db():
             'password_hash': hash_password('admin123'),
             'balance': 999999,
             'phone': '',
-            'google_id': None,
             'is_admin': True,
             'created_at': datetime.utcnow()
         })
@@ -409,6 +416,7 @@ def google_callback():
             max_user = users_collection.find_one(sort=[('user_id', -1)])
             new_id = (max_user['user_id'] + 1) if max_user else 1
             
+            # 🔧 FIX: No password_hash field with None
             users_collection.insert_one({
                 'user_id': new_id,
                 'username': username,
@@ -416,7 +424,6 @@ def google_callback():
                 'google_id': google_id,
                 'balance': 0,
                 'phone': '',
-                'password_hash': None,
                 'is_admin': False,
                 'created_at': datetime.utcnow()
             })
@@ -491,6 +498,7 @@ def login_page():
                 max_user = users_collection.find_one(sort=[('user_id', -1)])
                 new_id = (max_user['user_id'] + 1) if max_user else 1
                 
+                # 🔧 FIX: No google_id field with None
                 users_collection.insert_one({
                     'user_id': new_id,
                     'username': username,
@@ -498,7 +506,6 @@ def login_page():
                     'phone': phone_digits,
                     'password_hash': hash_password(password),
                     'balance': 0,
-                    'google_id': None,
                     'is_admin': False,
                     'created_at': datetime.utcnow()
                 })
@@ -1198,20 +1205,25 @@ def admin_dashboard():
             variant['product_name'] = 'N/A'
             variant['product'] = None
     
-    # ===== FIX: User ID থেকে User Data যোগ করুন =====
-    user_dict = {str(user['_id']): user for user in users}
+    # ===== FIX: Order এর সাথে User Data যোগ করুন =====
+    user_dict_by_id = {str(u['_id']): u for u in users}
     for order in orders:
         if order.get('user_id'):
             user = users_collection.find_one({'user_id': order['user_id']})
             if user:
                 order['user'] = user
+            else:
+                order['user'] = None
     
     total_users = users_collection.count_documents({})
     total_orders = orders_collection.count_documents({})
     total_revenue = sum(o.get('item_price', 0) for o in orders_collection.find())
     
-    # User dict for admin.html
+    # User dict for admin.html (used by coupons)
     user_dict_for_template = {str(u['_id']): u for u in users}
+    # Also add user_id lookup
+    for u in users:
+        user_dict_for_template[str(u.get('user_id'))] = u
     
     return render_template('admin.html',
                          users=users,
@@ -1390,7 +1402,7 @@ def add_variant():
     
     return redirect(url_for('admin_dashboard'))
 
-@app.route('/admin/delete-variant/<variant_id>', methods=['POST'])
+@app.route('/admin/delete-variant/<variant_id>', methods(['POST'])
 @login_required
 def delete_variant(variant_id):
     if variants_collection is None or not current_user.is_admin:
