@@ -61,20 +61,21 @@ else:
     airdrop_codes_collection = None
 
 # ============================================
-# CREATE INDEXES (FIXED - Google ID Issue)
+# CREATE INDEXES (FIXED - No google_id issue)
 # ============================================
 if db is not None:
     try:
-        # Drop old google_id index if exists
+        # 🔧 FIX: Drop old google_id index if exists (to avoid duplicate key error)
         try:
             users_collection.drop_index("google_id_1")
             print("✅ Dropped old google_id index")
         except:
             pass
         
+        # Create indexes properly
         users_collection.create_index("username", unique=True)
         users_collection.create_index("email", unique=True)
-        # 🔧 FIX: sparse=True so null values don't cause duplicate error
+        # 🔧 FIX: sparse=True so null values are ignored in unique index
         users_collection.create_index("google_id", unique=True, sparse=True)
         categories_collection.create_index("name", unique=True)
         coupons_collection.create_index("code", unique=True)
@@ -252,7 +253,7 @@ def init_db():
     if users_collection is None:
         return
     
-    # Admin User (google_id excluded to avoid duplicate key error)
+    # 🔧 FIX: Admin User (No google_id field to avoid duplicate key error)
     if not users_collection.find_one({'username': 'admin'}):
         users_collection.insert_one({
             'user_id': 1,
@@ -498,7 +499,7 @@ def login_page():
                 max_user = users_collection.find_one(sort=[('user_id', -1)])
                 new_id = (max_user['user_id'] + 1) if max_user else 1
                 
-                # 🔧 FIX: No google_id field with None
+                # 🔧 FIX: No google_id field
                 users_collection.insert_one({
                     'user_id': new_id,
                     'username': username,
@@ -1206,7 +1207,6 @@ def admin_dashboard():
             variant['product'] = None
     
     # ===== FIX: Order এর সাথে User Data যোগ করুন =====
-    user_dict_by_id = {str(u['_id']): u for u in users}
     for order in orders:
         if order.get('user_id'):
             user = users_collection.find_one({'user_id': order['user_id']})
@@ -1402,7 +1402,7 @@ def add_variant():
     
     return redirect(url_for('admin_dashboard'))
 
-@app.route('/admin/delete-variant/<variant_id>', methods(['POST'])
+@app.route('/admin/delete-variant/<variant_id>', methods=['POST'])
 @login_required
 def delete_variant(variant_id):
     if variants_collection is None or not current_user.is_admin:
