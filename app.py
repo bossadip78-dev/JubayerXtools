@@ -61,21 +61,17 @@ else:
     airdrop_codes_collection = None
 
 # ============================================
-# CREATE INDEXES (FIXED - No google_id issue)
+# CREATE INDEXES
 # ============================================
 if db is not None:
     try:
-        # 🔧 FIX: Drop old google_id index if exists (to avoid duplicate key error)
         try:
             users_collection.drop_index("google_id_1")
-            print("✅ Dropped old google_id index")
         except:
             pass
         
-        # Create indexes properly
         users_collection.create_index("username", unique=True)
         users_collection.create_index("email", unique=True)
-        # 🔧 FIX: sparse=True so null values are ignored in unique index
         users_collection.create_index("google_id", unique=True, sparse=True)
         categories_collection.create_index("name", unique=True)
         coupons_collection.create_index("code", unique=True)
@@ -202,7 +198,7 @@ def create_bohudur_payment(amount, user_id, username=None):
         cancel_url = f"{base_url}/payment/cancel"
         
         payload = {
-            "full_name": f"JubayerXtools User",
+            "full_name": f"jubayer user",
             "email": f"user{user_id}@jubayerxtools.com",
             "amount": amount,
             "return_type": "GET",
@@ -246,14 +242,13 @@ def create_bohudur_payment(amount, user_id, username=None):
         return {"success": False, "error": str(e)}
 
 # ============================================
-# CREATE DEFAULT DATA (FIXED - No google_id: None)
+# CREATE DEFAULT DATA
 # ============================================
 
 def init_db():
     if users_collection is None:
         return
     
-    # 🔧 FIX: Admin User (No google_id field to avoid duplicate key error)
     if not users_collection.find_one({'username': 'admin'}):
         users_collection.insert_one({
             'user_id': 1,
@@ -267,7 +262,6 @@ def init_db():
         })
         print("Admin created: admin / admin123")
     
-    # Default Categories
     default_categories = ['Others Item', 'Non Root Panel', 'Root Panel', 'iPhone Panel', 'PC Panel']
     for cat_name in default_categories:
         if not categories_collection.find_one({'name': cat_name}):
@@ -277,7 +271,6 @@ def init_db():
                 'created_at': datetime.utcnow()
             })
     
-    # Default Products
     default_logo = 'https://i.ibb.co.com/KxSnyTjy/635d5463-6cd3-485e-bd05-907c07468d3a.png'
     default_products = [
         ('FF Guild Glory', 130.00, 'Others Item', 'Free Fire Guild Level Up Bot. Guild Glory'),
@@ -304,7 +297,6 @@ def init_db():
                     'created_at': datetime.utcnow()
                 })
     
-    # Default Banners
     if not banners_collection.find_one():
         banners = [
             {
@@ -325,7 +317,6 @@ def init_db():
         for banner in banners:
             banners_collection.insert_one(banner)
     
-    # Popup Setting
     if not popup_collection.find_one():
         popup_collection.insert_one({
             'is_enabled': False,
@@ -336,7 +327,6 @@ def init_db():
             'created_at': datetime.utcnow()
         })
     
-    # Maintenance Setting
     if not maintenance_collection.find_one({'key': 'maintenance'}):
         maintenance_collection.insert_one({
             'key': 'maintenance',
@@ -346,7 +336,6 @@ def init_db():
             'created_at': datetime.utcnow()
         })
 
-# Run init
 with app.app_context():
     init_db()
 
@@ -417,7 +406,6 @@ def google_callback():
             max_user = users_collection.find_one(sort=[('user_id', -1)])
             new_id = (max_user['user_id'] + 1) if max_user else 1
             
-            # 🔧 FIX: No password_hash field with None
             users_collection.insert_one({
                 'user_id': new_id,
                 'username': username,
@@ -499,7 +487,6 @@ def login_page():
                 max_user = users_collection.find_one(sort=[('user_id', -1)])
                 new_id = (max_user['user_id'] + 1) if max_user else 1
                 
-                # 🔧 FIX: No google_id field
                 users_collection.insert_one({
                     'user_id': new_id,
                     'username': username,
@@ -520,10 +507,6 @@ def login_page():
 def logout():
     logout_user()
     return redirect(url_for('index'))
-
-# ============================================
-# DASHBOARD
-# ============================================
 
 @app.route('/dashboard')
 @login_required
@@ -687,6 +670,10 @@ def create_payment():
             
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+# ============================================
+# WEBHOOK HANDLER
+# ============================================
 
 @app.route('/payment/webhook', methods=['POST'])
 def payment_webhook():
@@ -1184,7 +1171,7 @@ def admin_dashboard():
     coupons = list(coupons_collection.find())
     variants = list(variants_collection.find())
     
-    # ===== FIX: Product এর সাথে Category Data যোগ করুন =====
+    # Fix: Add category name to products
     category_dict = {str(cat['_id']): cat for cat in categories}
     for product in products:
         cat_id = product.get('category_id')
@@ -1195,7 +1182,7 @@ def admin_dashboard():
             product['category_name'] = 'N/A'
             product['category_icon'] = 'fa-tag'
     
-    # ===== FIX: Variant এর সাথে Product Data যোগ করুন =====
+    # Fix: Add product name to variants
     product_dict = {str(p['_id']): p for p in products}
     for variant in variants:
         prod_id = variant.get('product_id')
@@ -1206,7 +1193,7 @@ def admin_dashboard():
             variant['product_name'] = 'N/A'
             variant['product'] = None
     
-    # ===== FIX: Order এর সাথে User Data যোগ করুন =====
+    # Fix: Add user to orders
     for order in orders:
         if order.get('user_id'):
             user = users_collection.find_one({'user_id': order['user_id']})
@@ -1219,9 +1206,7 @@ def admin_dashboard():
     total_orders = orders_collection.count_documents({})
     total_revenue = sum(o.get('item_price', 0) for o in orders_collection.find())
     
-    # User dict for admin.html (used by coupons)
     user_dict_for_template = {str(u['_id']): u for u in users}
-    # Also add user_id lookup
     for u in users:
         user_dict_for_template[str(u.get('user_id'))] = u
     
@@ -1242,7 +1227,7 @@ def admin_dashboard():
                          total_revenue=total_revenue)
 
 # ============================================
-# ADMIN CATEGORY ROUTES
+# ADMIN CATEGORY DELETE ROUTE (NEW)
 # ============================================
 
 @app.route('/admin/delete-category/<category_id>', methods=['POST'])
@@ -1257,6 +1242,7 @@ def delete_category(category_id):
         flash('Category not found!', 'error')
         return redirect(url_for('admin_dashboard'))
     
+    # Check if category has products
     products_count = products_collection.count_documents({'category_id': category_id})
     if products_count > 0:
         flash(f'Cannot delete "{category["name"]}" because it has {products_count} products. Delete products first or reassign them.', 'error')
@@ -1265,6 +1251,10 @@ def delete_category(category_id):
     categories_collection.delete_one({'_id': ObjectId(category_id)})
     flash(f'Category "{category["name"]}" deleted successfully!', 'success')
     return redirect(url_for('admin_dashboard'))
+
+# ============================================
+# ADMIN CREATE CATEGORY
+# ============================================
 
 @app.route('/admin/create-category', methods=['POST'])
 @login_required
