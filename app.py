@@ -16,7 +16,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'JubayerXtools-Secret-Key-2026'
 
 # ============================================
-# MONGODB CONFIG (Direct)
+# MONGODB CONFIG
 # ============================================
 MONGO_URI = "mongodb+srv://hemalmd817_db_user:U1NdZChsjvM2V9N6@cluster0.xkdghcq.mongodb.net/?appName=Cluster0"
 DB_NAME = "jubayerxtools"
@@ -31,7 +31,7 @@ except Exception as e:
     db = None
 
 # ============================================
-# COLLECTIONS (FIXED for Vercel)
+# COLLECTIONS
 # ============================================
 if db is not None:
     users_collection = db['users']
@@ -141,16 +141,6 @@ def check_password(password, hashed):
 def generate_order_id(user_id):
     return f"JX{int(time.time())}{''.join(random.choices(string.ascii_uppercase + string.digits, k=6))}"
 
-def get_user_by_id(user_id):
-    if users_collection is None:
-        return None
-    if isinstance(user_id, str) and user_id.isdigit():
-        return users_collection.find_one({'user_id': int(user_id)})
-    try:
-        return users_collection.find_one({'_id': ObjectId(user_id)})
-    except:
-        return users_collection.find_one({'user_id': user_id})
-
 def add_codes_to_product(product_id, codes_text):
     if not codes_text or airdrop_codes_collection is None:
         return 0
@@ -166,7 +156,7 @@ def add_codes_to_product(product_id, codes_text):
                     'is_used': False,
                     'used_by': None,
                     'used_at': None,
-                    'created_at': datetime.utcnow().isoformat()
+                    'created_at': datetime.utcnow()
                 })
                 added += 1
     return added
@@ -265,7 +255,7 @@ def init_db():
             'phone': '',
             'google_id': None,
             'is_admin': True,
-            'created_at': datetime.utcnow().isoformat()
+            'created_at': datetime.utcnow()
         })
         print("Admin created: admin / admin123")
     
@@ -276,7 +266,7 @@ def init_db():
             categories_collection.insert_one({
                 'name': cat_name,
                 'icon': 'fa-tag',
-                'created_at': datetime.utcnow().isoformat()
+                'created_at': datetime.utcnow()
             })
     
     # Default Products
@@ -303,7 +293,7 @@ def init_db():
                     'category_id': str(category['_id']),
                     'is_active': True,
                     'has_variants': False,
-                    'created_at': datetime.utcnow().isoformat()
+                    'created_at': datetime.utcnow()
                 })
     
     # Default Banners
@@ -314,14 +304,14 @@ def init_db():
                 'title': 'Welcome to JubayerXtools',
                 'order': 0,
                 'is_active': True,
-                'created_at': datetime.utcnow().isoformat()
+                'created_at': datetime.utcnow()
             },
             {
                 'image': 'https://i.ibb.co.com/KxSnyTjy/635d5463-6cd3-485e-bd05-907c07468d3a.png',
                 'title': 'Premium Products Available',
                 'order': 1,
                 'is_active': True,
-                'created_at': datetime.utcnow().isoformat()
+                'created_at': datetime.utcnow()
             }
         ]
         for banner in banners:
@@ -335,7 +325,7 @@ def init_db():
             'message': 'Join our Telegram channel for updates!',
             'button_text': 'Join Now',
             'button_link': 'https://t.me/jubayerxtools',
-            'created_at': datetime.utcnow().isoformat()
+            'created_at': datetime.utcnow()
         })
     
     # Maintenance Setting
@@ -345,7 +335,7 @@ def init_db():
             'value': False,
             'message': 'Site is under maintenance. Please check back later.',
             'photo': '',
-            'created_at': datetime.utcnow().isoformat()
+            'created_at': datetime.utcnow()
         })
 
 # Run init
@@ -428,7 +418,7 @@ def google_callback():
                 'phone': '',
                 'password_hash': None,
                 'is_admin': False,
-                'created_at': datetime.utcnow().isoformat()
+                'created_at': datetime.utcnow()
             })
     
     user_data = users_collection.find_one({'google_id': google_id})
@@ -510,7 +500,7 @@ def login_page():
                     'balance': 0,
                     'google_id': None,
                     'is_admin': False,
-                    'created_at': datetime.utcnow().isoformat()
+                    'created_at': datetime.utcnow()
                 })
                 flash('Registration successful! Please login.', 'success')
                 return render_template('login.html', active_tab='login')
@@ -554,10 +544,6 @@ def dashboard():
                          popup=popup,
                          banners=banners,
                          unread_count=unread_count)
-
-# ============================================
-# REMAINING ROUTES (সব আগের মতো)
-# ============================================
 
 @app.route('/my-profile')
 @login_required
@@ -676,7 +662,7 @@ def create_payment():
                 'amount': amount,
                 'order_id': result['order_id'],
                 'my_reference': result['my_reference'],
-                'created_at': datetime.utcnow().isoformat()
+                'created_at': datetime.utcnow()
             }
             
             return jsonify({
@@ -730,7 +716,7 @@ def payment_webhook():
             'type': 'add',
             'description': f'Added ৳{amount} via Bohudur Payment (Webhook)',
             'status': 'completed',
-            'created_at': datetime.utcnow().isoformat()
+            'created_at': datetime.utcnow()
         })
         
         notifications_collection.insert_one({
@@ -738,7 +724,7 @@ def payment_webhook():
             'title': '💰 Payment Successful',
             'message': f'Added ৳{amount} to your wallet via Bohudur Payment.',
             'is_read': False,
-            'created_at': datetime.utcnow().isoformat()
+            'created_at': datetime.utcnow()
         })
         
         print(f"✅ Balance added: {amount} to user {user_id}")
@@ -843,7 +829,7 @@ def select_variant():
         'final_price': variant.get('price'),
         'status': 'pending',
         'code_used': None,
-        'created_at': datetime.utcnow().isoformat()
+        'created_at': datetime.utcnow()
     })
     
     return redirect(url_for('checkout', order_id=order_id))
@@ -901,7 +887,7 @@ def apply_coupon():
     coupons_collection.update_one({'_id': coupon['_id']}, {
         '$set': {
             'used_by': current_user.user_id,
-            'used_at': datetime.utcnow().isoformat(),
+            'used_at': datetime.utcnow(),
             'is_active': False
         }
     })
@@ -989,11 +975,9 @@ def process_payment(order_id):
     if user.get('balance', 0) < amount_to_pay:
         return jsonify({'error': 'Insufficient balance!'}), 400
     
-    # Deduct balance
     new_balance = user.get('balance', 0) - amount_to_pay
     users_collection.update_one({'_id': user['_id']}, {'$set': {'balance': new_balance}})
     
-    # Update order
     update_data = {
         'status': 'completed',
         'final_price': amount_to_pay
@@ -1015,7 +999,7 @@ def process_payment(order_id):
                     '$set': {
                         'is_used': True,
                         'used_by': current_user.user_id,
-                        'used_at': datetime.utcnow().isoformat()
+                        'used_at': datetime.utcnow()
                     }
                 })
             update_data['code_used'] = ', '.join(codes_list)
@@ -1032,7 +1016,7 @@ def process_payment(order_id):
         'type': 'purchase',
         'description': f'Purchased {order["item_name"]}' + (f' (Coupon: {order.get("coupon_code")})' if order.get('coupon_code') else ''),
         'status': 'completed',
-        'created_at': datetime.utcnow().isoformat()
+        'created_at': datetime.utcnow()
     })
     
     return jsonify({
@@ -1076,7 +1060,7 @@ def add_money():
             'type': 'add',
             'description': f'Added ৳{amount} to balance',
             'status': 'completed',
-            'created_at': datetime.utcnow().isoformat()
+            'created_at': datetime.utcnow()
         })
         
         flash(f'Successfully added ৳{amount} to your balance!', 'success')
@@ -1122,7 +1106,7 @@ def buy_product(product_id):
         'final_price': product['price'],
         'status': 'pending',
         'code_used': None,
-        'created_at': datetime.utcnow().isoformat()
+        'created_at': datetime.utcnow()
     })
     
     return redirect(url_for('checkout', order_id=order_id))
@@ -1192,11 +1176,42 @@ def admin_dashboard():
     coupons = list(coupons_collection.find())
     variants = list(variants_collection.find())
     
+    # ===== FIX: Product এর সাথে Category Data যোগ করুন =====
+    category_dict = {str(cat['_id']): cat for cat in categories}
+    for product in products:
+        cat_id = product.get('category_id')
+        if cat_id and cat_id in category_dict:
+            product['category_name'] = category_dict[cat_id].get('name', 'N/A')
+            product['category_icon'] = category_dict[cat_id].get('icon', 'fa-tag')
+        else:
+            product['category_name'] = 'N/A'
+            product['category_icon'] = 'fa-tag'
+    
+    # ===== FIX: Variant এর সাথে Product Data যোগ করুন =====
+    product_dict = {str(p['_id']): p for p in products}
+    for variant in variants:
+        prod_id = variant.get('product_id')
+        if prod_id and prod_id in product_dict:
+            variant['product_name'] = product_dict[prod_id].get('name', 'N/A')
+            variant['product'] = product_dict[prod_id]
+        else:
+            variant['product_name'] = 'N/A'
+            variant['product'] = None
+    
+    # ===== FIX: User ID থেকে User Data যোগ করুন =====
     user_dict = {str(user['_id']): user for user in users}
+    for order in orders:
+        if order.get('user_id'):
+            user = users_collection.find_one({'user_id': order['user_id']})
+            if user:
+                order['user'] = user
     
     total_users = users_collection.count_documents({})
     total_orders = orders_collection.count_documents({})
     total_revenue = sum(o.get('item_price', 0) for o in orders_collection.find())
+    
+    # User dict for admin.html
+    user_dict_for_template = {str(u['_id']): u for u in users}
     
     return render_template('admin.html',
                          users=users,
@@ -1209,7 +1224,7 @@ def admin_dashboard():
                          notifications=notifications,
                          coupons=coupons,
                          variants=variants,
-                         user_dict=user_dict,
+                         user_dict=user_dict_for_template,
                          total_users=total_users,
                          total_orders=total_orders,
                          total_revenue=total_revenue)
@@ -1230,7 +1245,6 @@ def delete_category(category_id):
         flash('Category not found!', 'error')
         return redirect(url_for('admin_dashboard'))
     
-    # Check if category has products
     products_count = products_collection.count_documents({'category_id': category_id})
     if products_count > 0:
         flash(f'Cannot delete "{category["name"]}" because it has {products_count} products. Delete products first or reassign them.', 'error')
@@ -1257,7 +1271,7 @@ def create_category():
     categories_collection.insert_one({
         'name': name,
         'icon': icon,
-        'created_at': datetime.utcnow().isoformat()
+        'created_at': datetime.utcnow()
     })
     
     flash('Category created successfully!', 'success')
@@ -1297,7 +1311,7 @@ def create_coupon():
         'is_active': True,
         'used_by': None,
         'used_at': None,
-        'created_at': datetime.utcnow().isoformat()
+        'created_at': datetime.utcnow()
     })
     
     flash(f'Coupon "{code}" created successfully! ({discount_percent}% discount)', 'success')
@@ -1366,7 +1380,7 @@ def add_variant():
             'validity': validity,
             'quantity': quantity,
             'is_active': True,
-            'created_at': datetime.utcnow().isoformat()
+            'created_at': datetime.utcnow()
         })
         
         flash(f'✅ Variant "{name}" added successfully! (Price: ৳{price}, Quantity: {quantity})', 'success')
@@ -1421,7 +1435,7 @@ def create_product():
         'category_id': category_id,
         'is_active': True,
         'has_variants': has_variants,
-        'created_at': datetime.utcnow().isoformat()
+        'created_at': datetime.utcnow()
     }
     
     if product_type == 'file':
@@ -1436,7 +1450,6 @@ def create_product():
         if added > 0:
             flash(f'Added {added} codes!', 'success')
     
-    # Send notification to all users
     users = users_collection.find()
     for user in users:
         notifications_collection.insert_one({
@@ -1444,7 +1457,7 @@ def create_product():
             'title': 'New Product Added!',
             'message': f'Check out our new product: {name}',
             'is_read': False,
-            'created_at': datetime.utcnow().isoformat()
+            'created_at': datetime.utcnow()
         })
     
     flash('Product created successfully! Notification sent to all users.', 'success')
@@ -1583,7 +1596,7 @@ def send_notification():
                 'title': title,
                 'message': message,
                 'is_read': False,
-                'created_at': datetime.utcnow().isoformat()
+                'created_at': datetime.utcnow()
             })
     else:
         notifications_collection.insert_one({
@@ -1591,7 +1604,7 @@ def send_notification():
             'title': title,
             'message': message,
             'is_read': False,
-            'created_at': datetime.utcnow().isoformat()
+            'created_at': datetime.utcnow()
         })
     
     flash('Notification sent successfully!', 'success')
@@ -1738,7 +1751,7 @@ def add_banner():
         'link': link,
         'order': order,
         'is_active': True,
-        'created_at': datetime.utcnow().isoformat()
+        'created_at': datetime.utcnow()
     })
     
     flash('Banner added successfully!', 'success')
